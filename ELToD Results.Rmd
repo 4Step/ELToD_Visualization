@@ -14,19 +14,24 @@ output:
 
 
 ```{r setup, include=FALSE}
+
 #======================================================================
-# Load libraries 
+# Check and install libraries 
 #======================================================================
-library(knitr)
-library(flexdashboard)
-library(dplyr)
-library(tidyr)
-library(plotly)
-# library(ggplot2)
-library(DT)
-library(leaflet)
+required_packages <- c("knitr", "flexdashboard","dplyr", "tidyr", "plotly", 
+                       "DT", "leaflet", "data.table", "XLConnect", "foreign")
+
+check_packages <- required_packages %in% rownames(installed.packages())
+missing_packages <- required_packages[check_packages == FALSE]
+
+if (length(missing_packages) > 0) {
+  install.packages(missing_packages)
+}
+
+sapply(required_packages, library, character.only = TRUE)
 
 
+# Set chunk options
 opts_knit$set(root.dir=normalizePath('../'))
 opts_chunk$set(
 	echo = FALSE,
@@ -49,80 +54,61 @@ options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
 ```
 
 
-```{r Read VOL.csv, echo=FALSE, message=FALSE, warning=FALSE}
+```{r User_Settings, echo=FALSE, message=FALSE, warning=FALSE}
 #======================================================================
 # Read data files
 #======================================================================
-file_path <- "C:\\projects\\ExpressLanes_Documentation\\Visualization\\Data\\ELToD Results\\Veterans"
+# scenario path settings
+proj_path <- "C:/projects/ExpressLanes_Documentation/Visualization/Data/Veterans"
+dir.ELToD <- "ELToD Results"
+dir.Analysis <- "Analysis"
 policy <- c("oldPolicy", "newPolicy")
 scenarios <- c("Y2020Rev", "Y2040Rev")
 Years     <- c(2020, 2040)
 
-# shape_file <- "project_shape\\Veterans_v2.shp"
-
+# filenames and pull links
 filenames <- paste0("VOL",c(1:24),".csv")
 pull_link <- "Pull_Link_Dir.csv"
 
-# load all files
-for (p in 1:length(policy)){
-  for (s in 1:length(scenarios)){
-    for (f in 1:length(filenames)){
-      
-      # read all files 
-      df_vol <- read.csv(paste(file_path,policy[p],scenarios[s],filenames[f], sep ="\\"))
-      
-      # append scenario Year and Hour
-      df_vol$Policy <- policy[p]
-      df_vol$Hour <- f
-      df_vol$Year <- Years[s]
-      
-      # consolidate all data
-      ifelse(p ==1 & f == 1 & s == 1, df <- df_vol, df <- rbind(df,df_vol)) 
-    }
-  }
-}
+# output excel files, segment starting rows
+excel_template <- "Template.xlsx"
+segments <- c(1,2,3)
+seg_data_start_rows <- c(6, 51, 96)
+sheet_name = "Output"
+old_outfiles <- c("Output_2020A1.xlsx", "Output_2040A1.xlsx")
+new_outfiles <- c("Output_2020A2.xlsx", "Output_2040A2.xlsx")
+
+# A choice to read data from excel spreadsheets instead of standard ELToD outputs
+export_summaries_to_excel <- TRUE
+read_from_excel <- TRUE
+
+# Declare all full paths here
+file_path <- paste(proj_path, dir.ELToD, sep = "/")
+analysis_path <- paste(proj_path, dir.Analysis, sep = "/")
+pull_link_full_path <- paste(file_path, pull_link, sep="/") 
+excel_template_full_path <- paste(file_path, excel_template, sep="/") 
 
 ```
 
 
-```{r Process data, message=FALSE, warning=FALSE}
-#======================================================================
-# Process data 
-#======================================================================
-df_pulllink <- read.csv(paste(file_path, pull_link, sep="\\")) %>%
-               mutate(key = paste(A, B, sep = "-")) %>%
-               select(-A, -B, -PULL)
+```{r read_model_outputs}
 
-# select only specific columns
-df     <- df %>% 
-          mutate(key = paste(A, B, sep = "-")) %>% 
-          left_join(df_pulllink, by = "key")  %>%
-          mutate(LType_Dir = paste(LType, Dir, sep ="_")) %>% 
-          select(Policy, Year, Seg, Hour, LType_Dir,
-                VOL = TOTAL_VOL, CSPD, TOLL, VC_RATIO) %>%          
-          gather(-Policy, -Year, -Seg, -LType_Dir, -Hour,  key = name, value = value ) %>%
-          mutate(LType_Dir_name =  paste(LType_Dir, name, sep ="_")) %>%
-          select(-LType_Dir, -name) %>%
-          spread(LType_Dir_name, value) %>%
-          mutate(EL_NB_SHARE = EL_NB_VOL / (GU_NB_VOL + EL_NB_VOL),
-                 EL_SB_SHARE = EL_SB_VOL / (GU_SB_VOL + EL_SB_VOL),
-                 Corridor = GU_NB_VOL + EL_NB_VOL + GU_SB_VOL + EL_SB_VOL) %>%
-          arrange(Policy, Year, Seg, Hour)
+  # Read ELToD raw files
+  if (!read_from_excel) {
+    source('Read_ELToD_Outputs.R')
+    
+    # Export ELToD Sumamries to Spreadsheets
+    if(export_summaries_to_excel){
+      source('Export_ELTOD_Output.R')
+      
+    }
+  } else {
+    
+    # Read ELToD Summaries from Anslysis Spreadsheet
+    source('Read_ELTOD_Summaries.R')
+  }
+   
 
-
-# select only specific columns          
-dir_ltype  <- c("GU_NB","GU_SB", "EL_NB", "EL_SB")
-dir_ELtype <- dir_ltype[3:4]
-df_order   <- c("Policy", "Year", "Seg", "Hour", 
-               paste(dir_ltype,"_VOL",sep=""), 
-               "Corridor",
-               paste(dir_ELtype,"_SHARE",sep=""),
-               paste(dir_ltype,"_VC_RATIO",sep=""), 
-               paste(dir_ltype,"_CSPD",sep=""),
-               paste(dir_ELtype,"_TOLL",sep=""))
-
-# Column sort
-df <- df %>% select(df_order)  
 ```
 
 

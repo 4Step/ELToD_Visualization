@@ -8,7 +8,7 @@ The recent study involved in evaluating the revenue impacts of a change in toll 
 ## Background:
 Dashboard to view ELToD outputs. The initial tool was built for debugging, later transformed into an analysis tool. Given the frequency of the model runs and reviews, it maybe best to convert the analysis template into summary dashboard.  
 
-## Flexdashboard
+## Flexdashboard:
 Currently the outputs are produced to a html dashboard where each tab is manually defined to show the ELToD results for each of the Toll Segments. This need to be automated to generate the same dashboard for all projects where each project can have multiple toll segments.
 
 ## Inputs:
