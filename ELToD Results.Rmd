@@ -18,38 +18,38 @@ output:
 #======================================================================
 # Check and install libraries 
 #======================================================================
-required_packages <- c("knitr", "flexdashboard","dplyr", "tidyr", "plotly", 
-                       "DT", "leaflet", "data.table", "XLConnect", "foreign")
-
-check_packages <- required_packages %in% rownames(installed.packages())
-missing_packages <- required_packages[check_packages == FALSE]
-
-if (length(missing_packages) > 0) {
-  install.packages(missing_packages)
-}
-
-sapply(required_packages, library, character.only = TRUE)
-
-
-# Set chunk options
-opts_knit$set(root.dir=normalizePath('../'))
-opts_chunk$set(
-	echo = FALSE,
-	message = FALSE,
-	warning = FALSE,
-	fig.path = "figures/",
-  dev = 'png',
-  fig.keep = 'all',
-	dev.args=list(type="cairo")
-)
-
-
-options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
-        initComplete = JS(
-        "function(settings, json) {",
-        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
-         "}"),
-        searchHighlight = TRUE, filter = 'none')
+  required_packages <- c("knitr", "flexdashboard","dplyr", "tidyr", "plotly", 
+                         "DT", "leaflet", "data.table", "XLConnect", "foreign")
+  
+  check_packages <- required_packages %in% rownames(installed.packages())
+  missing_packages <- required_packages[check_packages == FALSE]
+  
+  if (length(missing_packages) > 0) {
+    install.packages(missing_packages)
+  }
+  
+  sapply(required_packages, library, character.only = TRUE)
+  
+  
+  # Set chunk options
+  opts_knit$set(root.dir=normalizePath('../'))
+  opts_chunk$set(
+  	echo = FALSE,
+  	message = FALSE,
+  	warning = FALSE,
+  	fig.path = "figures/",
+    dev = 'png',
+    fig.keep = 'all',
+  	dev.args=list(type="cairo")
+  )
+  
+  
+  options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
+          initComplete = JS(
+          "function(settings, json) {",
+          "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+           "}"),
+          searchHighlight = TRUE, filter = 'none')
 
 ```
 
@@ -58,35 +58,43 @@ options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
 #======================================================================
 # Read data files
 #======================================================================
-# scenario path settings
-proj_path <- "C:/projects/R-projects/ELToD_Visualization/Data/Veterans"
-dir.ELToD <- "ELToD Results"
-dir.Analysis <- "Analysis"
-policy <- c("oldPolicy", "newPolicy")
-scenarios <- c("Y2020Rev", "Y2040Rev")
-Years     <- c(2020, 2040)
+  # scenario path settings
+  dir_path <- "C:/projects/R-projects/ELToD_Visualization"
 
-# filenames and pull links
-filenames <- paste0("VOL",c(1:24),".csv")
-pull_link <- "Pull_Link_Dir.csv"
-
-# output excel files, segment starting rows
-excel_template <- "Template.xlsx"
-segments <- c(1,2,3)
-seg_data_start_rows <- c(6, 51, 96)
-sheet_name = "Output"
-old_outfiles <- c("Output_2020A1.xlsx", "Output_2040A1.xlsx")
-new_outfiles <- c("Output_2020A2.xlsx", "Output_2040A2.xlsx")
-
-# A choice to read data from excel spreadsheets instead of standard ELToD outputs
-export_summaries_to_excel <- TRUE
-read_from_excel <- FALSE
-
-# Declare all full paths here
-file_path <- paste(proj_path, dir.ELToD, sep = "/")
-analysis_path <- paste(proj_path, dir.Analysis, sep = "/")
-pull_link_full_path <- paste(file_path, pull_link, sep="/") 
-excel_template_full_path <- paste(file_path, excel_template, sep="/") 
+  dir.ELToD <- "ELToD Results"
+  dir.Analysis <- "Analysis"
+  policy <- c("oldPolicy", "newPolicy")
+  scenarios <- c("Y2020Rev", "Y2040Rev")
+  Years     <- c(2020, 2040)
+  
+  # filenames and pull links
+  filenames <- paste0("VOL",c(1:24),".csv")
+  pull_link <- "Pull_Link_Dir.csv"
+  
+  # output excel files, segment starting rows
+  excel_template <- "Template.xlsx"
+  segments <- c(1,2,3)
+  seg_data_start_rows <- c(6, 51, 96)
+  sheet_name = "Output"
+  old_outfiles <- c("Output_2020A1.xlsx", "Output_2040A1.xlsx")
+  new_outfiles <- c("Output_2020A2.xlsx", "Output_2040A2.xlsx")
+  
+  # Excel Summary file
+  excel_summary_file <- "Result_Veterans_2017-0818_2020_uses_original_hourly_distribution.xlsx"
+  
+  # A choice to read data from excel spreadsheets instead of standard ELToD outputs
+  read_from_excel <- TRUE
+  
+  # when read_from_excel is false, should it write to excel summaries
+  export_summaries_to_excel <- TRUE
+    
+  # Declare all full paths here
+  proj_path <- paste0(dir_path,"/Data/Veterans")
+  file_path <- paste(proj_path, dir.ELToD, sep = "/")
+  analysis_path <- paste(proj_path, dir.Analysis, sep = "/")
+  pull_link_full_path <- paste(file_path, pull_link, sep="/") 
+  excel_template_full_path <- paste(file_path, excel_template, sep="/") 
+  excel_summary_full_path <- paste(analysis_path, excel_summary_file, sep ="/") 
 
 ```
 
@@ -95,165 +103,26 @@ excel_template_full_path <- paste(file_path, excel_template, sep="/")
 
   # Read ELToD raw files
   if (!read_from_excel) {
-    source('Read_ELToD_Outputs.R')
+    source(paste0(dir_path,'/R/Read_ELToD_Outputs.R'))
     
     # Export ELToD Sumamries to Spreadsheets
     if(export_summaries_to_excel){
-      source('Export_ELTOD_Output.R')
+      source(paste0(dir_path,'/R/Export_ELToD_Output.R'))
       
     }
   } else {
     
     # Read ELToD Summaries from Anslysis Spreadsheet
-    source('Read_ELTOD_Summaries.R')
+    source(paste0(dir_path,'/R/Read_ELToD_Summaries.R'))
   }
    
 
-```
-
-
-```{r plot volume function w animation}
-accumulate_by <- function(dat, var) {
-  var <- lazyeval::f_eval(var, dat)
-  lvls <- plotly:::getLevels(var)
-  dats <- lapply(seq_along(lvls), function(x) {
-    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
-  })
-  dplyr::bind_rows(dats)
-}
-
-# TODO: 
-# Do both old and new plots in the same layout but as two graphs to use same Y-axis
-plot_volumes_ami <- function(df) {
-  df %>% 
-  plot_ly(
-    x = ~Hour,
-    y = ~Volume,    
-    split = ~Segment,
-    frame = ~frame,
-    type = 'scatter',
-    mode = 'lines',
-    showlegend = T
-  )  %>%
-  layout(title = "Volumes by Segment",
-         updatemenus = list(
-            list(
-              type = "buttons",
-              y = 0.8,
-              buttons = list(
-        
-                list(method = "restyle",
-                     args = list("type", "bar"),
-                     label = "Bar"),
-        
-                list(method = "restyle",
-                     args = list("type", "scatter"),
-                     label = "Scatter")
-                )
-              )
-            ),
-          
-         # Add LOS-B, LOS-C Highlighers
-          shapes = list(
-               list(type = "rect",
-                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
-                    x0 = "8", x1 = "10", xref = "x",
-                    y0 = 0, y1 = 1500, yref = "y"),
-               list(type = "rect",
-                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
-                    x0 = "16", x1 = "18", xref = "x",
-                    y0 = 0, y1 = 1500, yref = "y")             
-               ),
-         
-         # Add AM and PM Peaks 
-         annotations = list( 
-           list(x = 9, y = -50, text = " AM: 8:00 - 10:00 ", 
-                font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE),
-           list(x = 17, y = -50, text = " PM: 16:00 - 18:00 ", 
-                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE)
-         ),
-         
-         yaxis = list(domain = c(0, 1500))
-         
-     ) %>%
-  animation_opts(
-    frame = 60, 
-    transition = 0, 
-    redraw = FALSE
-  ) 
-}
-
-  
 ```
 
 
 ```{r plot volume function}
-
-# TODO: 
-# Do both old and new plots in the same layout but as two graphs to use same Y-axis
-
-plot_volumes <- function(df, max_volume, isGL) {
-  
-   if(isGL){
-     ls_colors <-  c('rgb(208,28,139)',
-                   'rgb(241,182,218)',
-                   'rgb(184,225,134)',
-                   'rgb(77,172,38)')
-   } else {
-      ls_colors <-  c('rgb(228,26,28)',
-                   'rgb(55,126,184)',
-                   'rgb(77,175,74)',
-                   'rgb(152,78,163)')
-   }
-   
-  
-  # create color list
-  for (c in 1:length(ls_colors)){
-     ifelse( c == 1, bar_colors <- rep(ls_colors[c],24), bar_colors <- c(bar_colors, rep(ls_colors[c],24)))
-  }
-  
-  df %>% 
-  plot_ly(
-    x = ~Hour,
-    y = ~Volume,    
-    split = ~Segment,
-    marker = list(color = bar_colors,
-                  line = list(color = bar_colors)),
-    type = 'bar',
-    mode = 'lines',
-    showlegend = T
-  )  %>%
-  layout(title = "Volumes by Segment",
-         
-         # Add LOS-B, LOS-C Highlighers
-          shapes = list(
-               list(type = "rect",
-                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
-                    x0 = "8", x1 = "10", xref = "x",
-                    y0 = 0, y1 = max_volume, yref = "y"),
-               list(type = "rect",
-                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
-                    x0 = "16", x1 = "18", xref = "x",
-                    y0 = 0, y1 = max_volume, yref = "y")             
-               ),
-         
-         # Add AM and PM Peaks 
-         annotations = list( 
-           list(x = 9, y = -50, text = " AM: 8:00 - 10:00 ", 
-                font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE),
-           list(x = 17, y = -50, text = " PM: 16:00 - 18:00 ", 
-                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE)
-         ),
-         
-         yaxis = list(range = c(0, max_volume))
-     )
-}
-
-  
+   # load function to animate
+   source(paste0(dir_path,'/R/Function_To_Plot_Volumes.R'))
 ```
 
 
@@ -421,51 +290,8 @@ Summary {data-navmenu="LOS"}
 
 
 ```{r plot v/c}
-
-plot_voc <- function(df) {
-  df %>% 
-  plot_ly(
-    x = ~Hour,
-    y = ~VC,    
-    type = 'scatter',
-    mode = 'lines',
-    color = ~direction,
-    showlegend = T
-  )  %>%
-
-  layout(title = "V/C by Lane Type",
-
-          # Add LOS-B, LOS-C Highlighers
-          shapes = list(
-               list(type = "rect",
-                    fillcolor = "yellow", line = list(color = "yellow"), opacity = 0.15,
-                    x0 = "0", x1 = "24", xref = "x",
-                    y0 = 0.0, y1 = 0.3, yref = "y"),
-               list(type = "rect",
-                    fillcolor = "green", line = list(color = "green"), opacity = 0.15,
-                    x0 = "0", x1 = "24", xref = "x",
-                    y0 = 0.3, y1 = 0.5, yref = "y"),
-               list(type = "rect",
-                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
-                    x0 = "0", x1 = "24", xref = "x",
-                    y0 = 0.5, y1 = 0.75, yref = "y")
-               ),
-         
-         # Add LOS 
-         annotations = list( 
-           list(x = 3, y = 0.15, text = " LOS A = V/C below 0.3 ", 
-                font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE),
-           list(x = 3, y = 0.4, text = " LOS B = V/C 0.3 to 0.5 ", 
-                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE),
-           list(x = 3, y = 0.6, text = " LOS C = V/C above 0.5 ", 
-                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
-                showarrow = FALSE)
-         )
-         
-    ) 
-}
+  # Function to plot v/c ratios
+  source(paste0(dir_path,'/R/Function_To_Plot_VoC.R'))
 ```
 
 
@@ -575,7 +401,6 @@ plot_los <- function(df){
           layout(yaxis = list(title = ' '), barmode = 'group')
 }
 
- 
 
 ```
 
@@ -639,28 +464,19 @@ x <- los_EL %>%
      arrange(Policy, Year, Seg) %>% 
      ungroup()
 
-addTotals <- function(df, policy, year){
-   y <- df %>% 
-        filter(Policy == policy, Year == year) %>%
-        mutate(Segment = ifelse(Seg == 1, "Sugarwood", "Anderson")) %>%
-        select(-Seg, -Policy, -Year, Segment, A, B, C, Total)
-   
-   z <- colSums(y[2:5])
-   yz <- rbind(y, c("Total", z[2:5]))
-   return(yz)
-}
 
 # Old policy
-x %>% 
-  filter(Policy == "oldPolicy", Year == 2020) %>% 
-  addTotals()
+x_old <- x %>% filter(Policy == "oldPolicy", Year == 2020)
 
-  mutate(Segment = ifelse(1, "Sugarwood", "Anderson"))
+datatable(x_old, options = list(dom = 't')) %>%
+  formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
 
-x <- x %>% summarise()
+# New policy
+x_new <- x %>% filter(Policy == "newPolicy", Year == 2020)
 
-datatable(x, options = list(dom = 't')) %>%
-  formatStyle('Sepal.Length',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+datatable(x_new, options = list(dom = 't')) %>%
+  formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+
 
 ```
 
