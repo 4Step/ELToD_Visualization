@@ -1,0 +1,957 @@
+---
+title: "ELToD Results"
+author: "Amar Sarvepalli"
+date: "July 27, 2017"
+output:
+  flexdashboard::flex_dashboard:
+    theme: united
+    keep_md: yes
+  navbar:
+  - align: left
+    title: About
+  source_code: embed
+---
+
+
+```{r setup, include=FALSE}
+#======================================================================
+# Load libraries 
+#======================================================================
+library(knitr)
+library(flexdashboard)
+library(dplyr)
+library(tidyr)
+library(plotly)
+# library(ggplot2)
+library(DT)
+library(leaflet)
+
+
+opts_knit$set(root.dir=normalizePath('../'))
+opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	fig.path = "figures/",
+  dev = 'png',
+  fig.keep = 'all',
+	dev.args=list(type="cairo")
+)
+
+
+options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
+        initComplete = JS(
+        "function(settings, json) {",
+        "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+         "}"),
+        searchHighlight = TRUE, filter = 'none')
+
+```
+
+
+```{r Read VOL.csv, echo=FALSE, message=FALSE, warning=FALSE}
+#======================================================================
+# Read data files
+#======================================================================
+file_path <- "C:\\projects\\ExpressLanes_Documentation\\Visualization\\Data\\ELToD Results\\Veterans"
+policy <- c("oldPolicy", "newPolicy")
+scenarios <- c("Y2020Rev", "Y2040Rev")
+Years     <- c(2020, 2040)
+
+# shape_file <- "project_shape\\Veterans_v2.shp"
+
+filenames <- paste0("VOL",c(1:24),".csv")
+pull_link <- "Pull_Link_Dir.csv"
+
+# load all files
+for (p in 1:length(policy)){
+  for (s in 1:length(scenarios)){
+    for (f in 1:length(filenames)){
+      
+      # read all files 
+      df_vol <- read.csv(paste(file_path,policy[p],scenarios[s],filenames[f], sep ="\\"))
+      
+      # append scenario Year and Hour
+      df_vol$Policy <- policy[p]
+      df_vol$Hour <- f
+      df_vol$Year <- Years[s]
+      
+      # consolidate all data
+      ifelse(p ==1 & f == 1 & s == 1, df <- df_vol, df <- rbind(df,df_vol)) 
+    }
+  }
+}
+
+```
+
+
+```{r Process data, message=FALSE, warning=FALSE}
+#======================================================================
+# Process data 
+#======================================================================
+df_pulllink <- read.csv(paste(file_path, pull_link, sep="\\")) %>%
+               mutate(key = paste(A, B, sep = "-")) %>%
+               select(-A, -B, -PULL)
+
+# select only specific columns
+df     <- df %>% 
+          mutate(key = paste(A, B, sep = "-")) %>% 
+          left_join(df_pulllink, by = "key")  %>%
+          mutate(LType_Dir = paste(LType, Dir, sep ="_")) %>% 
+          select(Policy, Year, Seg, Hour, LType_Dir,
+                VOL = TOTAL_VOL, CSPD, TOLL, VC_RATIO) %>%          
+          gather(-Policy, -Year, -Seg, -LType_Dir, -Hour,  key = name, value = value ) %>%
+          mutate(LType_Dir_name =  paste(LType_Dir, name, sep ="_")) %>%
+          select(-LType_Dir, -name) %>%
+          spread(LType_Dir_name, value) %>%
+          mutate(EL_NB_SHARE = EL_NB_VOL / (GU_NB_VOL + EL_NB_VOL),
+                 EL_SB_SHARE = EL_SB_VOL / (GU_SB_VOL + EL_SB_VOL),
+                 Corridor = GU_NB_VOL + EL_NB_VOL + GU_SB_VOL + EL_SB_VOL) %>%
+          arrange(Policy, Year, Seg, Hour)
+
+
+# select only specific columns          
+dir_ltype  <- c("GU_NB","GU_SB", "EL_NB", "EL_SB")
+dir_ELtype <- dir_ltype[3:4]
+df_order   <- c("Policy", "Year", "Seg", "Hour", 
+               paste(dir_ltype,"_VOL",sep=""), 
+               "Corridor",
+               paste(dir_ELtype,"_SHARE",sep=""),
+               paste(dir_ltype,"_VC_RATIO",sep=""), 
+               paste(dir_ltype,"_CSPD",sep=""),
+               paste(dir_ELtype,"_TOLL",sep=""))
+
+# Column sort
+df <- df %>% select(df_order)  
+```
+
+
+```{r plot volume function w animation}
+accumulate_by <- function(dat, var) {
+  var <- lazyeval::f_eval(var, dat)
+  lvls <- plotly:::getLevels(var)
+  dats <- lapply(seq_along(lvls), function(x) {
+    cbind(dat[var %in% lvls[seq(1, x)], ], frame = lvls[[x]])
+  })
+  dplyr::bind_rows(dats)
+}
+
+# TODO: 
+# Do both old and new plots in the same layout but as two graphs to use same Y-axis
+plot_volumes_ami <- function(df) {
+  df %>% 
+  plot_ly(
+    x = ~Hour,
+    y = ~Volume,    
+    split = ~Segment,
+    frame = ~frame,
+    type = 'scatter',
+    mode = 'lines',
+    showlegend = T
+  )  %>%
+  layout(title = "Volumes by Segment",
+         updatemenus = list(
+            list(
+              type = "buttons",
+              y = 0.8,
+              buttons = list(
+        
+                list(method = "restyle",
+                     args = list("type", "bar"),
+                     label = "Bar"),
+        
+                list(method = "restyle",
+                     args = list("type", "scatter"),
+                     label = "Scatter")
+                )
+              )
+            ),
+          
+         # Add LOS-B, LOS-C Highlighers
+          shapes = list(
+               list(type = "rect",
+                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
+                    x0 = "8", x1 = "10", xref = "x",
+                    y0 = 0, y1 = 1500, yref = "y"),
+               list(type = "rect",
+                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
+                    x0 = "16", x1 = "18", xref = "x",
+                    y0 = 0, y1 = 1500, yref = "y")             
+               ),
+         
+         # Add AM and PM Peaks 
+         annotations = list( 
+           list(x = 9, y = -50, text = " AM: 8:00 - 10:00 ", 
+                font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE),
+           list(x = 17, y = -50, text = " PM: 16:00 - 18:00 ", 
+                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE)
+         ),
+         
+         yaxis = list(domain = c(0, 1500))
+         
+     ) %>%
+  animation_opts(
+    frame = 60, 
+    transition = 0, 
+    redraw = FALSE
+  ) 
+}
+
+  
+```
+
+
+```{r plot volume function}
+
+# TODO: 
+# Do both old and new plots in the same layout but as two graphs to use same Y-axis
+
+plot_volumes <- function(df, max_volume, isGL) {
+  
+   if(isGL){
+     ls_colors <-  c('rgb(208,28,139)',
+                   'rgb(241,182,218)',
+                   'rgb(184,225,134)',
+                   'rgb(77,172,38)')
+   } else {
+      ls_colors <-  c('rgb(228,26,28)',
+                   'rgb(55,126,184)',
+                   'rgb(77,175,74)',
+                   'rgb(152,78,163)')
+   }
+   
+  
+  # create color list
+  for (c in 1:length(ls_colors)){
+     ifelse( c == 1, bar_colors <- rep(ls_colors[c],24), bar_colors <- c(bar_colors, rep(ls_colors[c],24)))
+  }
+  
+  df %>% 
+  plot_ly(
+    x = ~Hour,
+    y = ~Volume,    
+    split = ~Segment,
+    marker = list(color = bar_colors,
+                  line = list(color = bar_colors)),
+    type = 'bar',
+    mode = 'lines',
+    showlegend = T
+  )  %>%
+  layout(title = "Volumes by Segment",
+         
+         # Add LOS-B, LOS-C Highlighers
+          shapes = list(
+               list(type = "rect",
+                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
+                    x0 = "8", x1 = "10", xref = "x",
+                    y0 = 0, y1 = max_volume, yref = "y"),
+               list(type = "rect",
+                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
+                    x0 = "16", x1 = "18", xref = "x",
+                    y0 = 0, y1 = max_volume, yref = "y")             
+               ),
+         
+         # Add AM and PM Peaks 
+         annotations = list( 
+           list(x = 9, y = -50, text = " AM: 8:00 - 10:00 ", 
+                font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE),
+           list(x = 17, y = -50, text = " PM: 16:00 - 18:00 ", 
+                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE)
+         ),
+         
+         yaxis = list(range = c(0, max_volume))
+     )
+}
+
+  
+```
+
+
+Year 2020 {data-navmenu="EL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2020: EL Old Policy 
+    Old Policy Definition: Where LOS-A is charged
+
+```{r Old policy 2020, include=TRUE}
+old_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "oldPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(1000,FALSE)
+
+# Plot Old Polciy Volumes
+old_policy_2020
+```
+
+Row
+-------------------------------------
+### 2020: EL New Policy
+    New Policy Definition: Where LOS-A is NOT charged
+```{r New policy 2020}
+# Plot New Policy Volumes
+new_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "newPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(1000,FALSE)
+
+new_policy_2020
+
+```
+
+
+
+Year 2040 {data-navmenu="EL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2040: EL Old Policy 
+    Old Policy Definition: Where LOS-A is charged    
+```{r Old policy 2040}
+old_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(2000,FALSE)
+
+# Plot Old Policy Volumes
+old_policy_2040
+```
+   
+Row
+-------------------------------------
+### 2040: EL New Policy 
+    New Policy Definition: Where LOS-A is NOT charged 
+```{r New policy 2040}
+# Plot New Policy Volumes
+new_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(2000,FALSE)
+
+new_policy_2040 
+```
+
+
+
+Year 2020 {data-navmenu="GL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2020: GL Old Policy 
+    Old Policy Definition: Where LOS-A is charged
+
+```{r GL Old policy 2020}
+old_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "oldPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(4000,TRUE)
+
+# Plot Old Polciy Volumes
+old_policy_2020
+```
+
+Row
+-------------------------------------
+### 2020: GL New Policy
+    New Policy Definition: Where LOS-A is NOT charged
+```{r GL New policy 2020}
+# Plot New Policy Volumes
+new_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "newPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(4000,TRUE)
+
+new_policy_2020
+
+```
+
+
+
+Year 2040 {data-navmenu="GL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2040: GL Old Policy 
+    Old Policy Definition: Where LOS-A is charged    
+```{r GL Old policy 2040}
+old_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(6000,TRUE)
+
+# Plot Old Policy Volumes
+old_policy_2040
+```
+   
+Row
+-------------------------------------
+### 2040: GL New Policy 
+    New Policy Definition: Where LOS-A is NOT charged 
+```{r GL New policy 2040}
+# Plot New Policy Volumes
+new_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(6000,TRUE)
+
+new_policy_2040
+```
+
+
+Summary {data-navmenu="LOS"} 
+=====================================
+
+
+```{r plot v/c}
+
+plot_voc <- function(df) {
+  df %>% 
+  plot_ly(
+    x = ~Hour,
+    y = ~VC,    
+    type = 'scatter',
+    mode = 'lines',
+    color = ~direction,
+    showlegend = T
+  )  %>%
+
+  layout(title = "V/C by Lane Type",
+
+          # Add LOS-B, LOS-C Highlighers
+          shapes = list(
+               list(type = "rect",
+                    fillcolor = "yellow", line = list(color = "yellow"), opacity = 0.15,
+                    x0 = "0", x1 = "24", xref = "x",
+                    y0 = 0.0, y1 = 0.3, yref = "y"),
+               list(type = "rect",
+                    fillcolor = "green", line = list(color = "green"), opacity = 0.15,
+                    x0 = "0", x1 = "24", xref = "x",
+                    y0 = 0.3, y1 = 0.5, yref = "y"),
+               list(type = "rect",
+                    fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
+                    x0 = "0", x1 = "24", xref = "x",
+                    y0 = 0.5, y1 = 0.75, yref = "y")
+               ),
+         
+         # Add LOS 
+         annotations = list( 
+           list(x = 3, y = 0.15, text = " LOS A = V/C below 0.3 ", 
+                font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE),
+           list(x = 3, y = 0.4, text = " LOS B = V/C 0.3 to 0.5 ", 
+                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE),
+           list(x = 3, y = 0.6, text = " LOS C = V/C above 0.5 ", 
+                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE)
+         )
+         
+    ) 
+}
+```
+
+
+```{r V/C LOS plots, message=FALSE}
+
+# old policy 2020 seg 1
+df_old_policy_2020_seg1 <- df %>% 
+              filter(Year == 2020, Policy == "oldPolicy", Seg == 1) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+
+old_policy_2020_seg1 <- df_old_policy_2020_seg1 %>% 
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+
+
+# old policy 2020 seg 2
+df_old_policy_2020_seg2 <- df %>% 
+              filter(Year == 2020, Policy == "oldPolicy", Seg == 2) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+
+old_policy_2020_seg2 <- df_old_policy_2020_seg2 %>%
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+
+
+# new policy 2020 seg 1
+df_new_policy_2020_seg1 <- df %>% 
+              filter(Year == 2020, Policy == "newPolicy", Seg == 1) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) 
+
+new_policy_2020_seg1 <- df_new_policy_2020_seg1 %>%
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+
+
+# new policy 2020 seg 2
+df_new_policy_2020_seg2 <- df %>% 
+              filter(Year == 2020, Policy == "newPolicy", Seg == 2) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)  
+
+new_policy_2020_seg2 <- df_new_policy_2020_seg2  %>%            
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+```
+
+
+```{r LOS summaries}
+### 2040: Old Policy Segment 2: Anderson
+los_vol <- df %>% 
+         select(Year, Policy, Seg, Hour, 
+                GU_NB_VOL, GU_SB_VOL, EL_NB_VOL, EL_SB_VOL,
+                EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>%
+         gather(-Year, -Policy, -Seg, -Hour, -GU_NB_VOL, -GU_SB_VOL, -EL_NB_VOL, -EL_SB_VOL,
+                key = Dir, value = vc) %>%
+         mutate(EL_NB_VOL = ifelse(Dir == "EL_NB_VC_RATIO", EL_NB_VOL, 0),
+                EL_SB_VOL = ifelse(Dir == "EL_SB_VC_RATIO", EL_SB_VOL, 0),
+                GU_NB_VOL = ifelse(Dir == "EL_NB_VC_RATIO", GU_NB_VOL, 0),
+                GU_SB_VOL = ifelse(Dir == "EL_SB_VC_RATIO", GU_SB_VOL, 0),
+                GU_TOT =  GU_NB_VOL + GU_SB_VOL,
+                EL_TOT = EL_NB_VOL + EL_SB_VOL,
+                TOT = GU_TOT + EL_TOT,
+                LOS = ifelse(vc < 0.3, "A",
+                             ifelse(vc >= 0.5, "C", "B")
+                             )
+                ) %>%
+         group_by(Year, Policy, Seg, LOS) %>%
+         summarise(EL = sum(EL_TOT),
+                   Corridor = sum(TOT),
+                   EL_Share = EL / Corridor
+                   )%>%
+         arrange(Year, Policy)
+
+los_EL <- los_vol %>% 
+          select(-EL_Share, -Corridor) %>%
+          spread(Policy, EL) %>%
+          mutate_each(funs(replace(.,is.na(.),0)))
+
+los_EL_shares <- los_vol %>% 
+          select(-EL, -Corridor) %>%
+          spread(Policy, EL_Share) %>%
+          mutate_each(funs(replace(.,is.na(.),0)))
+
+# Compute trips paying by LOS
+los_paying <- los_vol %>% 
+          select(-EL_Share, -Corridor) %>%
+          spread(Policy, EL) %>%
+          mutate_each(funs(replace(.,is.na(.),0))) %>%
+          mutate(old_pay = oldPolicy,
+                 new_pay = ifelse(LOS == "A", 0, newPolicy)) %>%
+          select(Year, Seg, LOS, oldPolicy = old_pay, newPolicy = new_pay)
+          
+
+plot_los <- function(df){
+          df %>% 
+          plot_ly(x = ~LOS, y = ~oldPolicy, name = 'Old Policy', 
+                  type = 'bar', marker = list(color = 'rgb(173, 255, 6)')) %>%
+          add_trace(y = ~newPolicy, name = 'New Policy', 
+                    marker = list(color = 'rgba(255, 10, 255)')) %>%
+          layout(yaxis = list(title = ' '), barmode = 'group')
+}
+
+ 
+
+```
+
+Column {data-width=350}
+-------------------------------------
+### Volumes by LOS 
+```{r} 
+los_EL_all <- los_EL %>% 
+              group_by(Year, LOS) %>% 
+              summarise_each(funs(sum))%>% 
+              select(-Seg)  %>%
+              gather(-Year, -LOS, key = Policy, value = trips) %>% 
+              spread(LOS, trips) %>% 
+              mutate_each(funs(replace(.,is.na(.),0))) %>%
+              mutate(Total = A + B + C)
+
+datatable(
+  los_EL_all, 
+  options = list(dom  = 't'),
+  # extensions = 'Buttons', options = list(
+  #   dom = 'Bfrtip',
+  #   buttons = c('copy', 'excel')
+  # ),
+   rownames = FALSE
+)
+
+```
+
+### Trips paying
+```{r} 
+los_paying_all <- los_paying %>% 
+              group_by(Year, LOS) %>% 
+              summarise_each(funs(sum))%>% 
+              select(-Seg) %>%
+              gather(-Year, -LOS, key = Policy, value = trips) %>% 
+              spread(LOS, trips) %>% 
+              mutate_each(funs(replace(.,is.na(.),0))) %>%
+              mutate(Total = A + B + C)
+
+datatable(
+  los_paying_all, 
+  options = list(dom  = 't'),
+  # extensions = 'Buttons', options = list(
+  #   dom = 'Bfrtip',
+  #   buttons = c('copy', 'excel')
+  # ),
+  rownames = FALSE
+)
+
+```
+
+
+
+```{r}
+
+x <- los_EL %>% 
+     gather(-Year, -LOS, -Seg, key = Policy, value = trips) %>% 
+     spread(LOS, trips) %>% 
+     mutate_each(funs(replace(.,is.na(.),0))) %>%
+     mutate(Total = A + B + C) %>%
+     arrange(Policy, Year, Seg) %>% 
+     ungroup()
+
+addTotals <- function(df, policy, year){
+   y <- df %>% 
+        filter(Policy == policy, Year == year) %>%
+        mutate(Segment = ifelse(Seg == 1, "Sugarwood", "Anderson")) %>%
+        select(-Seg, -Policy, -Year, Segment, A, B, C, Total)
+   
+   z <- colSums(y[2:5])
+   yz <- rbind(y, c("Total", z[2:5]))
+   return(yz)
+}
+
+# Old policy
+x %>% 
+  filter(Policy == "oldPolicy", Year == 2020) %>% 
+  addTotals()
+
+  mutate(Segment = ifelse(1, "Sugarwood", "Anderson"))
+
+x <- x %>% summarise()
+
+datatable(x, options = list(dom = 't')) %>%
+  formatStyle('Sepal.Length',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+
+```
+
+
+Column {data-width=700}
+-------------------------------------
+### Map of Veterans Expressway
+
+```{r Map}
+# veteran_shp <- rgdal::readOGR(paste(file_path, shape_file, sep = "\\"),
+#                   layer = "Veterans_v2", GDAL1_integer64_policy = TRUE)
+
+map <- leaflet() %>%
+       addTiles() %>%
+       setView(lng = -82.5381, lat = 28.0679, zoom = 11)
+
+map
+```
+
+
+Year 2020: Sugarwood {data-navmenu="LOS"} 
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+### Level of Service (LOS) 
+
+* LOS A: V/C below 0.3
+* LOS B: V/C between 0.3 and 0.5
+* LOS C: V/C above 0.5
+
+### EL Volumes
+```{r}
+ los_EL %>% 
+ filter(Year == 2020, Seg == 1) %>% plot_los()
+
+```
+
+### EL Shares
+```{r}
+ los_EL_shares %>%
+ filter(Year == 2020, Seg == 1) %>% plot_los()
+
+```
+
+### Trips Paying
+```{r}
+ los_paying %>%
+ filter(Year == 2020, Seg == 1) %>% plot_los()
+
+```
+
+
+
+Column
+-------------------------------------
+    
+### 2020: Old Policy Segment 1: Sugarwood
+
+```{r old_policy_2020_seg1}
+old_policy_2020_seg1
+
+```
+
+
+### 2020: New Policy Segment 1: Sugarwood
+
+```{r new_policy_2020_seg1 }
+new_policy_2020_seg1
+
+```
+
+
+
+Year 2020: Anderson {data-navmenu="LOS"} 
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+### Level of Service (LOS) 
+
+* LOS A: V/C below 0.3
+* LOS B: V/C between 0.3 and 0.5
+* LOS C: V/C above 0.5
+
+### EL Volumes
+```{r}
+ los_EL %>%
+ filter(Year == 2020, Seg == 2) %>% plot_los()
+
+```
+
+### EL Shares
+```{r}
+ los_EL_shares %>%
+ filter(Year == 2020, Seg == 2) %>% plot_los()
+
+```
+
+### Trips Paying
+```{r}
+ los_paying %>%
+ filter(Year == 2020, Seg == 2) %>% plot_los()
+
+```
+
+
+
+Column
+-------------------------------------
+    
+### 2020: Old Policy Segment 2: Anderson
+
+```{r old_policy_2020_seg2}
+old_policy_2020_seg2
+
+```
+
+
+### 2020: New Policy Segment 2: Anderson
+
+```{r new_policy_2020_seg2 }
+new_policy_2020_seg2
+
+```
+
+
+Year 2040: Sugarwood {data-navmenu="LOS"} 
+=====================================
+
+```{r 2040 V/C LOS plots, message=FALSE}
+
+# old policy 2040 seg 1
+df_old_policy_2040_seg1 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy", Seg == 1) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+
+old_policy_2040_seg1 <- df_old_policy_2040_seg1 %>% 
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+
+
+# old policy 2040 seg 2
+df_old_policy_2040_seg2 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy", Seg == 2) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+
+old_policy_2040_seg2 <- df_old_policy_2040_seg2 %>%
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+
+
+# new policy 2040 seg 1
+df_new_policy_2040_seg1 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy", Seg == 1) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) 
+
+new_policy_2040_seg1 <- df_new_policy_2040_seg1 %>%
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+
+
+# new policy 2040 seg 2
+df_new_policy_2040_seg2 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy", Seg == 2) %>%
+              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)  
+
+new_policy_2040_seg2 <- df_new_policy_2040_seg2  %>%            
+              gather( -Hour, key = direction, value = VC) %>%
+              select(Hour, direction, VC ) %>% 
+              plot_voc()
+```
+
+Column {data-width=350}
+-------------------------------------
+### Level of Service (LOS) 
+
+* LOS A: V/C below 0.3
+* LOS B: V/C between 0.3 and 0.5
+* LOS C: V/C above 0.5
+
+### EL Volumes
+```{r}
+ los_EL %>%
+ filter(Year == 2040, Seg == 1) %>% plot_los()
+
+```
+
+### EL Shares
+```{r}
+ los_EL_shares %>%
+ filter(Year == 2040, Seg == 1) %>% plot_los()
+
+```
+
+### Trips Paying
+```{r}
+ los_paying %>%
+ filter(Year == 2040, Seg == 1) %>% plot_los()
+
+```
+
+Column 
+-------------------------------------
+    
+### 2040: Old Policy Segment 1: Sugarwood
+
+```{r old_policy_2040_seg1}
+old_policy_2040_seg1
+```
+
+
+### 2040: New Policy Segment 1: Sugarwood
+
+```{r new_policy_2040_seg1 }
+new_policy_2040_seg1
+
+```
+
+
+
+Year 2040: Anderson {data-navmenu="LOS"} 
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+### Level of Service (LOS) 
+
+* LOS A: V/C below 0.3
+* LOS B: V/C between 0.3 and 0.5
+* LOS C: V/C above 0.5
+
+### EL Volumes
+```{r}
+ los_EL %>%
+ filter(Year == 2040, Seg == 2) %>% plot_los()
+
+```
+
+### EL Shares
+```{r}
+ los_EL_shares %>%
+ filter(Year == 2040, Seg == 2) %>% plot_los()
+
+```
+
+### Trips Paying
+```{r}
+ los_paying %>%
+ filter(Year == 2040, Seg == 2) %>% plot_los()
+
+```
+
+
+Column 
+-------------------------------------
+
+### 2040: Old Policy Segment 2: Anderson
+
+```{r old_policy_2040_seg2}
+old_policy_2040_seg2
+
+```
+
+
+### 2040: New Policy Segment 2: Anderson
+
+```{r new_policy_2040_seg2 }
+new_policy_2040_seg2
+
+```
+
+
