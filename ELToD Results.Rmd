@@ -59,7 +59,7 @@ options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
 # Read data files
 #======================================================================
 # scenario path settings
-proj_path <- "C:/projects/ExpressLanes_Documentation/Visualization/Data/Veterans"
+proj_path <- "C:/projects/R-projects/ELToD_Visualization/Data/Veterans"
 dir.ELToD <- "ELToD Results"
 dir.Analysis <- "Analysis"
 policy <- c("oldPolicy", "newPolicy")
@@ -80,7 +80,7 @@ new_outfiles <- c("Output_2020A2.xlsx", "Output_2040A2.xlsx")
 
 # A choice to read data from excel spreadsheets instead of standard ELToD outputs
 export_summaries_to_excel <- TRUE
-read_from_excel <- TRUE
+read_from_excel <- FALSE
 
 # Declare all full paths here
 file_path <- paste(proj_path, dir.ELToD, sep = "/")
