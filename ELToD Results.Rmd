@@ -88,7 +88,7 @@ output:
   read_from_excel <- TRUE
   
   # when read_from_excel is false, should it write to excel summaries
-  export_summaries_to_excel <- TRUE
+  export_summaries_to_excel <- FALSE
   
   # excel_summary_file <- "Result_Veterans_2017-0818_2020_uses_original_hourly_distribution.xlsx"
   

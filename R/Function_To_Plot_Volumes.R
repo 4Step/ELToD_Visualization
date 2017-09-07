@@ -34,7 +34,44 @@ plot_volumes <- function(df, max_volume, isGL) {
     showlegend = T
   )  %>%
   layout(title = "Volumes by Segment",
-         
+         # Drop downmenus
+          updatemenus = list(
+            # Add Direction
+            list(
+              yanchor = "top",
+              type = "buttons",
+              direction = "right",
+              x = 0.2,
+              y = 1.2,
+              buttons = list(
+        
+                list(method = "restyle",
+                     args = list("visible", list(TRUE, FALSE)),
+                     label = "Northbound"),
+        
+                list(method = "restyle",
+                     args = list("visible", list(FALSE, TRUE)),
+                     label = "Southbound")
+                )
+              ),
+             # Add Segments
+             list(
+              type = "buttons",
+              yanchor = "top",
+              x = 1.2,
+              y = 1.2,
+              buttons = list(
+        
+                list(method = "restyle",
+                     args = list("visible", list(TRUE, TRUE, FALSE, FALSE)),
+                     label = "Segment-1"),
+        
+                list(method = "restyle",
+                     args = list("visible", list(FALSE, FALSE, TRUE, TRUE)),
+                     label = "Segment-2")
+                )
+              )
+            ),
          # Add LOS-B, LOS-C Highlighers
           shapes = list(
                list(type = "rect",
