@@ -314,55 +314,55 @@ Summary {data-navmenu="Summary"}
 ```
 
 
-```{r V/C LOS plots, message=FALSE}
+<!-- ```{r V/C LOS plots, message=FALSE} -->
 
-# old policy 2020 seg 1
-df_old_policy_2020_seg1 <- df %>% 
-              filter(Year == 2020, Policy == "oldPolicy", Seg == 1) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+<!-- # old policy 2020 seg 1 -->
+<!-- df_old_policy_2020_seg1 <- df %>%  -->
+<!--               filter(Year == 2020, Policy == "oldPolicy", Seg == 1) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO) -->
 
-old_policy_2020_seg1 <- df_old_policy_2020_seg1 %>% 
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
-
-
-# old policy 2020 seg 2
-df_old_policy_2020_seg2 <- df %>% 
-              filter(Year == 2020, Policy == "oldPolicy", Seg == 2) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
-
-old_policy_2020_seg2 <- df_old_policy_2020_seg2 %>%
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
+<!-- old_policy_2020_seg1 <- df_old_policy_2020_seg1 %>%  -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
 
 
-# new policy 2020 seg 1
-df_new_policy_2020_seg1 <- df %>% 
-              filter(Year == 2020, Policy == "newPolicy", Seg == 1) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) 
+<!-- # old policy 2020 seg 2 -->
+<!-- df_old_policy_2020_seg2 <- df %>%  -->
+<!--               filter(Year == 2020, Policy == "oldPolicy", Seg == 2) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO) -->
 
-new_policy_2020_seg1 <- df_new_policy_2020_seg1 %>%
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
+<!-- old_policy_2020_seg2 <- df_old_policy_2020_seg2 %>% -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
 
 
-# new policy 2020 seg 2
-df_new_policy_2020_seg2 <- df %>% 
-              filter(Year == 2020, Policy == "newPolicy", Seg == 2) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)  
+<!-- # new policy 2020 seg 1 -->
+<!-- df_new_policy_2020_seg1 <- df %>%  -->
+<!--               filter(Year == 2020, Policy == "newPolicy", Seg == 1) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO)  -->
 
-new_policy_2020_seg2 <- df_new_policy_2020_seg2  %>%            
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
-```
+<!-- new_policy_2020_seg1 <- df_new_policy_2020_seg1 %>% -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
+
+
+<!-- # new policy 2020 seg 2 -->
+<!-- df_new_policy_2020_seg2 <- df %>%  -->
+<!--               filter(Year == 2020, Policy == "newPolicy", Seg == 2) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO)   -->
+
+<!-- new_policy_2020_seg2 <- df_new_policy_2020_seg2  %>%             -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
+<!-- ``` -->
 
 
 ```{r LOS summaries}
@@ -411,17 +411,18 @@ los_paying <- los_vol %>%
           select(Year, Seg, LOS, oldPolicy = old_pay, newPolicy = new_pay)
           
 
-plot_los <- function(df){
-          df %>% 
-          plot_ly(x = ~LOS, y = ~oldPolicy, name = 'Old Policy', 
-                  type = 'bar', marker = list(color = 'rgb(173, 255, 6)')) %>%
-          add_trace(y = ~newPolicy, name = 'New Policy', 
-                    marker = list(color = 'rgba(255, 10, 255)')) %>%
-          layout(yaxis = list(title = ' '), barmode = 'group')
-}
+# plot_los <- function(df){
+#           df %>% 
+#           plot_ly(x = ~LOS, y = ~oldPolicy, name = 'Old Policy', 
+#                   type = 'bar', marker = list(color = 'rgb(173, 255, 6)')) %>%
+#           add_trace(y = ~newPolicy, name = 'New Policy', 
+#                     marker = list(color = 'rgba(255, 10, 255)')) %>%
+#           layout(yaxis = list(title = ' '), barmode = 'group')
+# }
 
 
 ```
+
 
 Column {data-width=350}
 -------------------------------------
@@ -439,11 +440,7 @@ los_EL_all <- los_EL %>%
 datatable(
   los_EL_all, 
   options = list(dom  = 't'),
-  # extensions = 'Buttons', options = list(
-  #   dom = 'Bfrtip',
-  #   buttons = c('copy', 'excel')
-  # ),
-   rownames = FALSE
+  rownames = FALSE
 )
 
 ```
@@ -462,10 +459,6 @@ los_paying_all <- los_paying %>%
 datatable(
   los_paying_all, 
   options = list(dom  = 't'),
-  # extensions = 'Buttons', options = list(
-  #   dom = 'Bfrtip',
-  #   buttons = c('copy', 'excel')
-  # ),
   rownames = FALSE
 )
 
@@ -512,263 +505,263 @@ Column {data-width=700}
 ```
 
 
-Year 2020: Sugarwood {data-navmenu="LOS"} 
-=====================================
+<!-- Year 2020: Sugarwood {data-navmenu="LOS"}  -->
+<!-- ===================================== -->
 
-Column {data-width=350}
--------------------------------------
-### Level of Service (LOS) 
+<!-- Column {data-width=350} -->
+<!-- ------------------------------------- -->
+<!-- ### Level of Service (LOS)  -->
 
-* LOS A: V/C below 0.3
-* LOS B: V/C between 0.3 and 0.5
-* LOS C: V/C above 0.5
+<!-- * LOS A: V/C below 0.3 -->
+<!-- * LOS B: V/C between 0.3 and 0.5 -->
+<!-- * LOS C: V/C above 0.5 -->
 
-### EL Volumes
-```{r}
- los_EL %>% 
- filter(Year == 2020, Seg == 1) %>% plot_los()
+<!-- ### EL Volumes -->
+<!-- ```{r} -->
+<!--  los_EL %>%  -->
+<!--  filter(Year == 2020, Seg == 1) %>% plot_los() -->
 
-```
+<!-- ``` -->
 
-### EL Shares
-```{r}
- los_EL_shares %>%
- filter(Year == 2020, Seg == 1) %>% plot_los()
+<!-- ### EL Shares -->
+<!-- ```{r} -->
+<!--  los_EL_shares %>% -->
+<!--  filter(Year == 2020, Seg == 1) %>% plot_los() -->
 
-```
+<!-- ``` -->
 
-### Trips Paying
-```{r}
- los_paying %>%
- filter(Year == 2020, Seg == 1) %>% plot_los()
+<!-- ### Trips Paying -->
+<!-- ```{r} -->
+<!--  los_paying %>% -->
+<!--  filter(Year == 2020, Seg == 1) %>% plot_los() -->
 
-```
+<!-- ``` -->
 
 
 
-Column
--------------------------------------
-    
-### 2020: Old Policy Segment 1: Sugarwood
+<!-- Column -->
+<!-- ------------------------------------- -->
 
-```{r old_policy_2020_seg1}
-old_policy_2020_seg1
+<!-- ### 2020: Old Policy Segment 1: Sugarwood -->
 
-```
+<!-- ```{r old_policy_2020_seg1} -->
+<!-- old_policy_2020_seg1 -->
 
+<!-- ``` -->
 
-### 2020: New Policy Segment 1: Sugarwood
 
-```{r new_policy_2020_seg1 }
-new_policy_2020_seg1
+<!-- ### 2020: New Policy Segment 1: Sugarwood -->
 
-```
+<!-- ```{r new_policy_2020_seg1 } -->
+<!-- new_policy_2020_seg1 -->
 
+<!-- ``` -->
 
 
-Year 2020: Anderson {data-navmenu="LOS"} 
-=====================================
 
-Column {data-width=350}
--------------------------------------
-### Level of Service (LOS) 
+<!-- Year 2020: Anderson {data-navmenu="LOS"}  -->
+<!-- ===================================== -->
 
-* LOS A: V/C below 0.3
-* LOS B: V/C between 0.3 and 0.5
-* LOS C: V/C above 0.5
+<!-- Column {data-width=350} -->
+<!-- ------------------------------------- -->
+<!-- ### Level of Service (LOS)  -->
 
-### EL Volumes
-```{r}
- los_EL %>%
- filter(Year == 2020, Seg == 2) %>% plot_los()
+<!-- * LOS A: V/C below 0.3 -->
+<!-- * LOS B: V/C between 0.3 and 0.5 -->
+<!-- * LOS C: V/C above 0.5 -->
 
-```
+<!-- ### EL Volumes -->
+<!-- ```{r} -->
+<!--  los_EL %>% -->
+<!--  filter(Year == 2020, Seg == 2) %>% plot_los() -->
 
-### EL Shares
-```{r}
- los_EL_shares %>%
- filter(Year == 2020, Seg == 2) %>% plot_los()
+<!-- ``` -->
 
-```
+<!-- ### EL Shares -->
+<!-- ```{r} -->
+<!--  los_EL_shares %>% -->
+<!--  filter(Year == 2020, Seg == 2) %>% plot_los() -->
 
-### Trips Paying
-```{r}
- los_paying %>%
- filter(Year == 2020, Seg == 2) %>% plot_los()
+<!-- ``` -->
 
-```
+<!-- ### Trips Paying -->
+<!-- ```{r} -->
+<!--  los_paying %>% -->
+<!--  filter(Year == 2020, Seg == 2) %>% plot_los() -->
 
+<!-- ``` -->
 
 
-Column
--------------------------------------
-    
-### 2020: Old Policy Segment 2: Anderson
 
-```{r old_policy_2020_seg2}
-old_policy_2020_seg2
+<!-- Column -->
+<!-- ------------------------------------- -->
 
-```
+<!-- ### 2020: Old Policy Segment 2: Anderson -->
 
+<!-- ```{r old_policy_2020_seg2} -->
+<!-- old_policy_2020_seg2 -->
 
-### 2020: New Policy Segment 2: Anderson
+<!-- ``` -->
 
-```{r new_policy_2020_seg2 }
-new_policy_2020_seg2
 
-```
+<!-- ### 2020: New Policy Segment 2: Anderson -->
 
+<!-- ```{r new_policy_2020_seg2 } -->
+<!-- new_policy_2020_seg2 -->
 
-Year 2040: Sugarwood {data-navmenu="LOS"} 
-=====================================
+<!-- ``` -->
 
-```{r 2040 V/C LOS plots, message=FALSE}
 
-# old policy 2040 seg 1
-df_old_policy_2040_seg1 <- df %>% 
-              filter(Year == 2040, Policy == "oldPolicy", Seg == 1) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+<!-- Year 2040: Sugarwood {data-navmenu="LOS"}  -->
+<!-- ===================================== -->
 
-old_policy_2040_seg1 <- df_old_policy_2040_seg1 %>% 
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
+<!-- ```{r 2040 V/C LOS plots, message=FALSE} -->
 
+<!-- # old policy 2040 seg 1 -->
+<!-- df_old_policy_2040_seg1 <- df %>%  -->
+<!--               filter(Year == 2040, Policy == "oldPolicy", Seg == 1) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO) -->
 
-# old policy 2040 seg 2
-df_old_policy_2040_seg2 <- df %>% 
-              filter(Year == 2040, Policy == "oldPolicy", Seg == 2) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)
+<!-- old_policy_2040_seg1 <- df_old_policy_2040_seg1 %>%  -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
 
-old_policy_2040_seg2 <- df_old_policy_2040_seg2 %>%
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
 
+<!-- # old policy 2040 seg 2 -->
+<!-- df_old_policy_2040_seg2 <- df %>%  -->
+<!--               filter(Year == 2040, Policy == "oldPolicy", Seg == 2) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO) -->
 
-# new policy 2040 seg 1
-df_new_policy_2040_seg1 <- df %>% 
-              filter(Year == 2040, Policy == "newPolicy", Seg == 1) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) 
+<!-- old_policy_2040_seg2 <- df_old_policy_2040_seg2 %>% -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
 
-new_policy_2040_seg1 <- df_new_policy_2040_seg1 %>%
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
 
+<!-- # new policy 2040 seg 1 -->
+<!-- df_new_policy_2040_seg1 <- df %>%  -->
+<!--               filter(Year == 2040, Policy == "newPolicy", Seg == 1) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO)  -->
 
-# new policy 2040 seg 2
-df_new_policy_2040_seg2 <- df %>% 
-              filter(Year == 2040, Policy == "newPolicy", Seg == 2) %>%
-              select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
-                     EL_NB_VC_RATIO, EL_SB_VC_RATIO)  
+<!-- new_policy_2040_seg1 <- df_new_policy_2040_seg1 %>% -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
 
-new_policy_2040_seg2 <- df_new_policy_2040_seg2  %>%            
-              gather( -Hour, key = direction, value = VC) %>%
-              select(Hour, direction, VC ) %>% 
-              plot_voc()
-```
 
-Column {data-width=350}
--------------------------------------
-### Level of Service (LOS) 
+<!-- # new policy 2040 seg 2 -->
+<!-- df_new_policy_2040_seg2 <- df %>%  -->
+<!--               filter(Year == 2040, Policy == "newPolicy", Seg == 2) %>% -->
+<!--               select(Hour, GU_NB_VC_RATIO, GU_SB_VC_RATIO,  -->
+<!--                      EL_NB_VC_RATIO, EL_SB_VC_RATIO)   -->
 
-* LOS A: V/C below 0.3
-* LOS B: V/C between 0.3 and 0.5
-* LOS C: V/C above 0.5
+<!-- new_policy_2040_seg2 <- df_new_policy_2040_seg2  %>%             -->
+<!--               gather( -Hour, key = direction, value = VC) %>% -->
+<!--               select(Hour, direction, VC ) %>%  -->
+<!--               plot_voc() -->
+<!-- ``` -->
 
-### EL Volumes
-```{r}
- los_EL %>%
- filter(Year == 2040, Seg == 1) %>% plot_los()
+<!-- Column {data-width=350} -->
+<!-- ------------------------------------- -->
+<!-- ### Level of Service (LOS)  -->
 
-```
+<!-- * LOS A: V/C below 0.3 -->
+<!-- * LOS B: V/C between 0.3 and 0.5 -->
+<!-- * LOS C: V/C above 0.5 -->
 
-### EL Shares
-```{r}
- los_EL_shares %>%
- filter(Year == 2040, Seg == 1) %>% plot_los()
+<!-- ### EL Volumes -->
+<!-- ```{r} -->
+<!--  los_EL %>% -->
+<!--  filter(Year == 2040, Seg == 1) %>% plot_los() -->
 
-```
+<!-- ``` -->
 
-### Trips Paying
-```{r}
- los_paying %>%
- filter(Year == 2040, Seg == 1) %>% plot_los()
+<!-- ### EL Shares -->
+<!-- ```{r} -->
+<!--  los_EL_shares %>% -->
+<!--  filter(Year == 2040, Seg == 1) %>% plot_los() -->
 
-```
+<!-- ``` -->
 
-Column 
--------------------------------------
-    
-### 2040: Old Policy Segment 1: Sugarwood
+<!-- ### Trips Paying -->
+<!-- ```{r} -->
+<!--  los_paying %>% -->
+<!--  filter(Year == 2040, Seg == 1) %>% plot_los() -->
 
-```{r old_policy_2040_seg1}
-old_policy_2040_seg1
-```
+<!-- ``` -->
 
+<!-- Column  -->
+<!-- ------------------------------------- -->
 
-### 2040: New Policy Segment 1: Sugarwood
+<!-- ### 2040: Old Policy Segment 1: Sugarwood -->
 
-```{r new_policy_2040_seg1 }
-new_policy_2040_seg1
+<!-- ```{r old_policy_2040_seg1} -->
+<!-- old_policy_2040_seg1 -->
+<!-- ``` -->
 
-```
 
+<!-- ### 2040: New Policy Segment 1: Sugarwood -->
 
-Year 2040: Anderson {data-navmenu="LOS"} 
-=====================================
+<!-- ```{r new_policy_2040_seg1 } -->
+<!-- new_policy_2040_seg1 -->
 
-Column {data-width=350}
--------------------------------------
-### Level of Service (LOS) 
+<!-- ``` -->
 
-* LOS A: V/C below 0.3
-* LOS B: V/C between 0.3 and 0.5
-* LOS C: V/C above 0.5
 
-### EL Volumes
-```{r}
- los_EL %>%
- filter(Year == 2040, Seg == 2) %>% plot_los()
+<!-- Year 2040: Anderson {data-navmenu="LOS"}  -->
+<!-- ===================================== -->
 
-```
+<!-- Column {data-width=350} -->
+<!-- ------------------------------------- -->
+<!-- ### Level of Service (LOS)  -->
 
-### EL Shares
-```{r}
- los_EL_shares %>%
- filter(Year == 2040, Seg == 2) %>% plot_los()
+<!-- * LOS A: V/C below 0.3 -->
+<!-- * LOS B: V/C between 0.3 and 0.5 -->
+<!-- * LOS C: V/C above 0.5 -->
 
-```
+<!-- ### EL Volumes -->
+<!-- ```{r} -->
+<!--  los_EL %>% -->
+<!--  filter(Year == 2040, Seg == 2) %>% plot_los() -->
 
-### Trips Paying
-```{r}
- los_paying %>%
- filter(Year == 2040, Seg == 2) %>% plot_los()
+<!-- ``` -->
 
-```
+<!-- ### EL Shares -->
+<!-- ```{r} -->
+<!--  los_EL_shares %>% -->
+<!--  filter(Year == 2040, Seg == 2) %>% plot_los() -->
 
+<!-- ``` -->
 
-Column 
--------------------------------------
+<!-- ### Trips Paying -->
+<!-- ```{r} -->
+<!--  los_paying %>% -->
+<!--  filter(Year == 2040, Seg == 2) %>% plot_los() -->
 
-### 2040: Old Policy Segment 2: Anderson
+<!-- ``` -->
 
-```{r old_policy_2040_seg2}
-old_policy_2040_seg2
 
-```
+<!-- Column  -->
+<!-- ------------------------------------- -->
 
+<!-- ### 2040: Old Policy Segment 2: Anderson -->
 
-### 2040: New Policy Segment 2: Anderson
+<!-- ```{r old_policy_2040_seg2} -->
+<!-- old_policy_2040_seg2 -->
 
-```{r new_policy_2040_seg2 }
-new_policy_2040_seg2
+<!-- ``` -->
 
-```
+
+<!-- ### 2040: New Policy Segment 2: Anderson -->
+
+<!-- ```{r new_policy_2040_seg2 } -->
+<!-- new_policy_2040_seg2 -->
+
+<!-- ``` -->
 
 
 ```{r child = 'R/LOS_by_Segment.Rmd'}

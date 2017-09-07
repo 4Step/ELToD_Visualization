@@ -1,0 +1,57 @@
+Input Files                                       
+  Network File                                    ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\2040\Sawgrass_Express_v4-3.net                                                                                                              
+  Toll Link File                                  ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\2020\Toll_Link_3a.csv                                                                                                                       
+  Directional Link File                           ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\2040\Directional_Link.csv                                                                                                                   
+  Pull Link File                                  ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\2040\Pull_Link.csv                                                                                                                          
+  Cap Speed File                                  ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\parameters\Capspd.csv                                                                                                                       
+  Express Lane Link File                          ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\parameters\EL_Link.csv                                                                                                                      
+  Toll Link FTYPE Number                          ,96                                                                                        
+  HOV Link FTYPE Number                           ,0                                                                                         
+  Trip Table Type                                 ,Daily                                                                                     
+  Trip Table Factor                               ,1                                                                                         
+  Trip Table File                                 ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\2020\2020_DY.MAT                                                                                                                            
+  Hourly Distribution File                        ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\parameters\Hourly_Distribution_AWDTv2.csv                                                                                                   
+  Number of Zones                                 ,52                                                                                        
+Link Attribute Name                               
+  Distance                                        ,DISTANCE                                                                                  
+  Number of Lanes                                 ,NUM_LANES                                                                                 
+  Facility Type                                   ,FTYPE                                                                                     
+  Free Flow Speed                                 ,SPEED                                                                                     
+  Capacity per Line                               ,CAPACITY_LANE                                                                             
+Assignment Parameters                             
+  Assignment Method                               ,AVE                                                                                       
+  Max Iteration                                   ,100                                                                                       
+  Relative Gap                                    ,0.0001                                                                                    
+  Min Link Congested Speed                        ,1                                                                                         
+  Use Cube Cluster                                ,1                                                                                         
+Pricing Policy                                    
+  Minimum Per Segment Toll                        ,0.228                                                                                     
+  Maximum Per Segment Toll                        ,5                                                                                         
+  Use Minimum Per Segment Toll in Network         ,1                                                                                         
+  Minimum Per Trip Toll                           ,0.228                                                                                     
+  HOV Discount Rate                               ,0                                                                                         
+  Toll Policy Curve Exponent Coefficient          ,15                                                                                        
+  VC Toll Offset                                  ,0                                                                                         
+Volume Delay Function Parameters                  
+  Volume Delay Function                           ,Akcelik                                                                                   
+  Akcelik P                                       ,0.1                                                                                       
+  Akcelik T                                       ,1                                                                                         
+  Akcelik pb                                      ,0.1                                                                                       
+  Akcelik Offset                                  ,0.1                                                                                       
+  BPR Alpha                                       ,0.1                                                                                       
+  BPR Beta                                        ,4.3                                                                                       
+  Use BPR Coefficients in Network                 ,0                                                                                         
+Choice Model Coefficients                         
+  Hourly Parameters                               ,C:\FSUTMS\ELToD\Sawgrass ELToDv23 2017-0808\Input\parameters\Hourly_Parameters_SAWGv4.csv                                                                                                     
+  Toll Coefficient (beta)                         ,-0.736                                                                                    
+  Travel Time Coefficient (alpha)                 ,-0.118                                                                                    
+  Reliability Coefficient                         ,0.9                                                                                       
+  Reliability Time Coefficient Gamma              ,0.2                                                                                       
+  Reliability Distance Coefficient Eta            ,0.1                                                                                       
+  Perceived Time Coefficient Steepness            ,13.67                                                                                     
+  Perceived Time Mid Point VC Ratio               ,0.693                                                                                     
+  Perceived Time Max VC Ratio                     ,1.2                                                                                       
+  Distance Penalty Y                              ,0.55                                                                                      
+  Distance Penalty X1                             ,2                                                                                         
+  Distance Penalty X2                             ,4                                                                                         
+  One Express Lane Time Weight                    ,1                                                                                         

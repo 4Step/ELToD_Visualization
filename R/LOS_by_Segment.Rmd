@@ -9,32 +9,34 @@ output:
 Year 2020: {data-navmenu="LOS"} 
 =====================================
 
+<!-- Column {data-width=250} -->
+<!-- ------------------------------------- -->
+<!-- ### Level of Service (LOS)  -->
+
+<!-- * LOS A: V/C below 0.3 -->
+<!-- * LOS B: V/C between 0.3 and 0.5 -->
+<!-- * LOS C: V/C above 0.5 -->
+
 Column {data-width=350}
 -------------------------------------
-### Level of Service (LOS) 
-
-* LOS A: V/C below 0.3
-* LOS B: V/C between 0.3 and 0.5
-* LOS C: V/C above 0.5
-
 ### EL Volumes
 ```{r}
  los_EL %>%
- filter(Year == 2020, Seg == 2) %>% plot_los()
+ filter(Year == 2020) %>% plot_los()
 
 ```
 
 ### EL Shares
 ```{r}
  los_EL_shares %>%
- filter(Year == 2020, Seg == 2) %>% plot_los()
+ filter(Year == 2020) %>% plot_los()
 
 ```
 
 ### Trips Paying
 ```{r}
  los_paying %>%
- filter(Year == 2020, Seg == 2) %>% plot_los()
+ filter(Year == 2020) %>% plot_los()
 
 ```
 
@@ -90,21 +92,21 @@ Column {data-width=350}
 ### EL Volumes
 ```{r}
  los_EL %>%
- filter(Year == 2040, Seg == 2) %>% plot_los()
+ filter(Year == 2040) %>% plot_los()
 
 ```
 
 ### EL Shares
 ```{r}
  los_EL_shares %>%
- filter(Year == 2040, Seg == 2) %>% plot_los()
+ filter(Year == 2040) %>% plot_los()
 
 ```
 
 ### Trips Paying
 ```{r}
  los_paying %>%
- filter(Year == 2040, Seg == 2) %>% plot_los()
+ filter(Year == 2040) %>% plot_los()
 
 ```
 

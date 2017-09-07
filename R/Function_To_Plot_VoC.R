@@ -22,7 +22,7 @@ plot_voc <- function(df) {
                                                     args = list("visible", visible_Seg),
                                                     label = paste0("Segment-",s)))) 
   }
-  # 
+  # Add "All" Segments button (to reset)
   buttons_Segment = c(buttons_Segment, list( list(method = "restyle",
                                                 args = list("visible", rep(c(TRUE),n_dir * n_ltype, each = n_seg) ),
                                                 label = "ALL"))) 
@@ -118,4 +118,56 @@ plot_voc <- function(df) {
          )
          
     ) 
+}
+
+
+
+#======================================================================
+# FUNCTION To produce LOS bar graphs
+plot_los <- function(df){
+  
+  df <-  df %>% 
+          gather(-Seg, -LOS, -Year, key = Policy, value = Trips) %>%
+          mutate(seg_policy = paste(Seg, Policy, sep = "_"))
+  
+  # Create Segment Buttons
+  n_seg <- length(unique(df$seg_policy))/2  # Two directions
+  visibility <- rep(c(FALSE,FALSE), n_seg)
+  buttons_Segment <- list()
+  
+  for (s in 1:n_seg){
+    visible_Seg <- visibility
+    visible_Seg[(2 * s - 1) : (2 * s)] <- c(TRUE,TRUE)
+    buttons_Segment = c(buttons_Segment, list( list( method = "restyle",
+                                                     args = list("visible", visible_Seg),
+                                                     label = paste0("Segment-",s))))    
+  }
+  
+  # Add All segments
+  visibility <- rep(c(TRUE,TRUE), n_seg)
+  buttons_Segment = c(list(list( method = "restyle",
+                            args = list("visible", visibility),
+                            label = "All")), buttons_Segment)  
+  
+  # Bar Plot
+  df %>% 
+  plot_ly(x = ~LOS, y = ~Trips, split = ~seg_policy, type = 'bar', showlegend = T) %>%  
+  # add_trace(y = ~newPolicy, name = 'New Policy') %>%
+  layout(yaxis = list(title = ' '), barmode = 'group', 
+         updatemenus = list(
+                          list(
+                              type = "buttons",
+                              yanchor = "top",
+                              xanchor = "center",
+                              direction = "right",
+                              bgcolor = "lightblue",
+                              font = list(color = "darkgrey"),
+                              bordercolor = "lightgrey",
+                              x = 0.0,
+                              y = 1.5,
+                              buttons = buttons_Segment
+                              )
+                          )
+         )
+
 }
