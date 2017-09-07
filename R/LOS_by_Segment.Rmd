@@ -1,0 +1,148 @@
+---
+title: "LOS_By_Segments"
+author: "Amar Sarvepalli"
+date: "September 7, 2017"
+output: 
+    flexdashboard::flex_dashboard:
+---
+
+Year 2020: {data-navmenu="LOS"} 
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+### Level of Service (LOS) 
+
+* LOS A: V/C below 0.3
+* LOS B: V/C between 0.3 and 0.5
+* LOS C: V/C above 0.5
+
+### EL Volumes
+```{r}
+ los_EL %>%
+ filter(Year == 2020, Seg == 2) %>% plot_los()
+
+```
+
+### EL Shares
+```{r}
+ los_EL_shares %>%
+ filter(Year == 2020, Seg == 2) %>% plot_los()
+
+```
+
+### Trips Paying
+```{r}
+ los_paying %>%
+ filter(Year == 2020, Seg == 2) %>% plot_los()
+
+```
+
+
+Column 
+-------------------------------------
+### 2020: Old Policy 
+
+```{r}
+old_policy_2020 <- df %>% 
+              filter(Policy == "oldPolicy", Year == 2020) %>%
+              select(Hour, Seg, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>% 
+              gather( -Hour, -Seg, key = direction, value = VC) %>%
+              mutate( direction = paste(Seg, direction, sep= "_"))%>%
+              select(Hour, direction, VC )%>% 
+              plot_voc()
+
+old_policy_2020 
+
+```
+
+
+### 2020: New Policy 
+
+```{r}
+
+new_policy_2020  <-  df %>% 
+              filter(Policy == "newPolicy", Year == 2020) %>%
+              select(Hour, Seg, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>% 
+              gather( -Hour, -Seg, key = direction, value = VC) %>%
+              mutate( direction = paste(Seg, direction, sep= "_"))%>%
+              select(Hour, direction, VC )%>% 
+              plot_voc()
+
+new_policy_2020 
+
+```
+
+
+Year 2040: {data-navmenu="LOS"} 
+=====================================
+
+Column {data-width=350}
+-------------------------------------
+### Level of Service (LOS) 
+
+* LOS A: V/C below 0.3
+* LOS B: V/C between 0.3 and 0.5
+* LOS C: V/C above 0.5
+
+### EL Volumes
+```{r}
+ los_EL %>%
+ filter(Year == 2040, Seg == 2) %>% plot_los()
+
+```
+
+### EL Shares
+```{r}
+ los_EL_shares %>%
+ filter(Year == 2040, Seg == 2) %>% plot_los()
+
+```
+
+### Trips Paying
+```{r}
+ los_paying %>%
+ filter(Year == 2040, Seg == 2) %>% plot_los()
+
+```
+
+
+Column 
+-------------------------------------
+
+### 2040: Old Policy 
+
+```{r}
+old_policy_2040 <- df %>% 
+              filter(Policy == "oldPolicy", Year == 2040) %>%
+              select(Hour, Seg, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>% 
+              gather( -Hour, -Seg, key = direction, value = VC) %>%
+              mutate( direction = paste(Seg, direction, sep= "_"))%>%
+              select(Hour, direction, VC )%>% 
+              plot_voc()
+
+old_policy_2040 
+
+```
+
+
+### 2040: New Policy 
+
+```{r}
+
+new_policy_2040  <-  df %>% 
+              filter(Policy == "newPolicy", Year == 2040) %>%
+              select(Hour, Seg, GU_NB_VC_RATIO, GU_SB_VC_RATIO, 
+                     EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>% 
+              gather( -Hour, -Seg, key = direction, value = VC) %>%
+              mutate( direction = paste(Seg, direction, sep= "_"))%>%
+              select(Hour, direction, VC )%>% 
+              plot_voc()
+
+new_policy_2040
+
+```
+
