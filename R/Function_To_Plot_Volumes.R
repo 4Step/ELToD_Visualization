@@ -38,8 +38,13 @@ plot_volumes <- function(df, max_volume, isGL) {
                                                      args = list("visible", visible_Seg),
                                                      label = paste0("Segment-",s))))    
   }
-
-        
+  
+  # Add All segments
+  visibility <- rep(c(TRUE,TRUE), n_seg)
+  buttons_Segment = c(list(list( method = "restyle",
+                            args = list("visible", visibility),
+                            label = "All")), buttons_Segment)   
+  # Actual Plot      
   df %>% 
   plot_ly(
     x = ~Hour,
@@ -59,7 +64,7 @@ plot_volumes <- function(df, max_volume, isGL) {
               yanchor = "top",
               type = "buttons",
               # direction = "right",
-              x = 0.2,
+              x = 0,
               y = 1.2,
               buttons = list(
                 # Both directions
@@ -84,7 +89,7 @@ plot_volumes <- function(df, max_volume, isGL) {
               direction = "right",
               
               x = 1.2,
-              y = 0.2,
+              y = 1.2,
               buttons = buttons_Segment 
               # list(
               # 
