@@ -22,7 +22,11 @@ plot_voc <- function(df) {
                                                     args = list("visible", visible_Seg),
                                                     label = paste0("Segment-",s)))) 
   }
-
+  # 
+  buttons_Segment = c(buttons_Segment, list( list(method = "restyle",
+                                                args = list("visible", rep(c(TRUE),n_dir * n_ltype, each = n_seg) ),
+                                                label = "ALL"))) 
+      
   df %>% 
   plot_ly(
     x = ~Hour,
