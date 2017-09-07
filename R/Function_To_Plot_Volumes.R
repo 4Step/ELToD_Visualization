@@ -9,19 +9,37 @@ plot_volumes <- function(df, max_volume, isGL) {
                    'rgb(241,182,218)',
                    'rgb(184,225,134)',
                    'rgb(77,172,38)')
+     
+     title_txt <- "GL Volumes by Segment"
    } else {
       ls_colors <-  c('rgb(228,26,28)',
                    'rgb(55,126,184)',
                    'rgb(77,175,74)',
                    'rgb(152,78,163)')
+      
+      title_txt <- "EL Volumes by Segment"
    }
    
-  
   # create color list
   for (c in 1:length(ls_colors)){
      ifelse( c == 1, bar_colors <- rep(ls_colors[c],24), bar_colors <- c(bar_colors, rep(ls_colors[c],24)))
   }
   
+  
+  # Create Segment Buttons
+  n_seg <- length(unique(df$Segment))/2  # Two directions
+  visibility <- rep(c(FALSE,FALSE), n_seg)
+  buttons_Segment <- list()
+  
+  for (s in 1:n_seg){
+    visible_Seg <- visibility
+    visible_Seg[(2 * s - 1) : (2 * s)] <- c(TRUE,TRUE)
+    buttons_Segment = c(buttons_Segment, list( list( method = "restyle",
+                                                     args = list("visible", visible_Seg),
+                                                     label = paste0("Segment-",s))))    
+  }
+
+        
   df %>% 
   plot_ly(
     x = ~Hour,
@@ -33,22 +51,26 @@ plot_volumes <- function(df, max_volume, isGL) {
     mode = 'lines',
     showlegend = T
   )  %>%
-  layout(title = "Volumes by Segment",
+  layout(title = title_txt,
          # Drop downmenus
           updatemenus = list(
             # Add Direction
             list(
               yanchor = "top",
               type = "buttons",
-              direction = "right",
+              # direction = "right",
               x = 0.2,
               y = 1.2,
               buttons = list(
-        
+                # Both directions
+                list(method = "restyle",
+                     args = list("visible", list(TRUE, TRUE)),
+                     label = "Both"),
+                # Northbound
                 list(method = "restyle",
                      args = list("visible", list(TRUE, FALSE)),
                      label = "Northbound"),
-        
+                #Southbound
                 list(method = "restyle",
                      args = list("visible", list(FALSE, TRUE)),
                      label = "Southbound")
@@ -58,18 +80,22 @@ plot_volumes <- function(df, max_volume, isGL) {
              list(
               type = "buttons",
               yanchor = "top",
+              xanchor = "center",
+              direction = "right",
+              
               x = 1.2,
-              y = 1.2,
-              buttons = list(
-        
-                list(method = "restyle",
-                     args = list("visible", list(TRUE, TRUE, FALSE, FALSE)),
-                     label = "Segment-1"),
-        
-                list(method = "restyle",
-                     args = list("visible", list(FALSE, FALSE, TRUE, TRUE)),
-                     label = "Segment-2")
-                )
+              y = 0.2,
+              buttons = buttons_Segment 
+              # list(
+              # 
+              #   list(method = "restyle",
+              #        args = list("visible", list(TRUE, TRUE, FALSE, FALSE)),
+              #        label = "Segment-1"),
+              # 
+              #   list(method = "restyle",
+              #        args = list("visible", list(FALSE, FALSE, TRUE, TRUE)),
+              #        label = "Segment-2")
+              #   )
               )
             ),
          # Add LOS-B, LOS-C Highlighers
