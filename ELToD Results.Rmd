@@ -4,12 +4,11 @@ author: "Amar Sarvepalli"
 date: "July 27, 2017"
 output:
   flexdashboard::flex_dashboard:
-    theme: united
     keep_md: yes
+    theme: united
   navbar:
   - align: left
     title: About
-  source_code: embed
 ---
 
 
@@ -305,7 +304,7 @@ new_policy_2040
 ```
 
 
-Summary {data-navmenu="LOS"} 
+Summary {data-navmenu="Summary"} 
 =====================================
 
 
@@ -507,7 +506,8 @@ Column {data-width=700}
 
 ```{r Map, message=FALSE, warning=FALSE, echo = FALSE}
 
-source(paste0(dir_path,'/R/Map_Corridor_Location.R'))
+  source(paste0(dir_path,'/R/Map_Corridor_Location.R'))
+  map
 
 ```
 

@@ -93,7 +93,7 @@ plot_volumes <- function(df, max_volume, isGL) {
               xanchor = "center",
               direction = "down",
               bgcolor = "darkblue",
-              font = list(color = "white"),
+              font = list(color = "lightgrey"),
               bordercolor = "blue",
               x = 1.2,
               y = 1.1,

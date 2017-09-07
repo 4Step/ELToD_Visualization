@@ -56,4 +56,3 @@ if('PULLLINK' %in% colnames(shapeData@data)) {
        options = layersControlOptions(collapsed = FALSE)
     )
   
-map
