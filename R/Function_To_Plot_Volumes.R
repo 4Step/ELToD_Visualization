@@ -62,10 +62,14 @@ plot_volumes <- function(df, max_volume, isGL) {
             # Add Direction
             list(
               yanchor = "top",
-              type = "buttons",
+              # type = "buttons",
+              type = "dropdown",
+              bgcolor = "darkgreen",
+              font = list(color = "white"),
+              bordercolor = "darkred",
               # direction = "right",
               x = 0,
-              y = 1.2,
+              y = 1.1,
               buttons = list(
                 # Both directions
                 list(method = "restyle",
@@ -83,24 +87,17 @@ plot_volumes <- function(df, max_volume, isGL) {
               ),
              # Add Segments
              list(
-              type = "buttons",
+              # type = "buttons",
+              type = "dropdown",
               yanchor = "top",
               xanchor = "center",
-              direction = "right",
-              
+              direction = "down",
+              bgcolor = "darkblue",
+              font = list(color = "white"),
+              bordercolor = "blue",
               x = 1.2,
-              y = 1.2,
+              y = 1.1,
               buttons = buttons_Segment 
-              # list(
-              # 
-              #   list(method = "restyle",
-              #        args = list("visible", list(TRUE, TRUE, FALSE, FALSE)),
-              #        label = "Segment-1"),
-              # 
-              #   list(method = "restyle",
-              #        args = list("visible", list(FALSE, FALSE, TRUE, TRUE)),
-              #        label = "Segment-2")
-              #   )
               )
             ),
          # Add LOS-B, LOS-C Highlighers
