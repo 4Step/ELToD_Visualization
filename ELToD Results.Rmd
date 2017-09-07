@@ -719,7 +719,6 @@ new_policy_2040_seg1
 ```
 
 
-
 Year 2040: Anderson {data-navmenu="LOS"} 
 =====================================
 
@@ -771,4 +770,8 @@ new_policy_2040_seg2
 
 ```
 
+
+```{r child = 'R/LOS_Segment_2_2040.Rmd'}
+
+```
 
