@@ -28,18 +28,25 @@ plot_voc <- function(df) {
                list(type = "rect",
                     fillcolor = "orange", line = list(color = "orange"), opacity = 0.15,
                     x0 = "0", x1 = "24", xref = "x",
-                    y0 = 0.5, y1 = 0.75, yref = "y")
+                    y0 = 0.5, y1 = 0.8, yref = "y"),
+               list(type = "rect",
+                    fillcolor = "grey", line = list(color = "grey"), opacity = 0.15,
+                    x0 = "0", x1 = "24", xref = "x",
+                    y0 = 0.8, y1 = 1.1, yref = "y")
                ),
          
          # Add LOS 
          annotations = list( 
-           list(x = 3, y = 0.15, text = " LOS A = V/C below 0.3 ", 
+           list(x = 3, y = 0.15, text = " LOS A = v/c below 0.3 ", 
                 font = list(family = 'Arial',color = 'rgba(49,130,189, 1)', size = 12), 
                 showarrow = FALSE),
-           list(x = 3, y = 0.4, text = " LOS B = V/C 0.3 to 0.5 ", 
+           list(x = 3, y = 0.4, text = " LOS B = v/c 0.3 to 0.5 ", 
                 font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
                 showarrow = FALSE),
-           list(x = 3, y = 0.6, text = " LOS C = V/C above 0.5 ", 
+           list(x = 3, y = 0.6, text = " LOS C = v/c 0.5 to 0.8", 
+                font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
+                showarrow = FALSE),
+           list(x = 3, y = 0.8, text = " LOS D & above = v/c above 0.8 ", 
                 font = list(family = 'Arial', color = 'rgba(49,130,189, 1)', size = 12), 
                 showarrow = FALSE)
          )
