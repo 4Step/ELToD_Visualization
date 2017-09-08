@@ -52,6 +52,7 @@ output:
            "}"),
           searchHighlight = TRUE, filter = 'none')
 
+  config(plot_ly(), displaylogo = FALSE, collaborate = FALSE)
 ```
 
 
@@ -61,6 +62,8 @@ output:
 #======================================================================
   # Path settings
   dir_path     <- "C:/projects/R-projects/ELToD_Visualization"
+  dir.Data     <- "Data"
+  dir.Scenario <- "Veterans"
   dir.ELToD    <- "ELToD Results"
   dir.Analysis <- "Analysis"
   dir.Shape    <- "Project_Shape"
@@ -102,7 +105,7 @@ output:
 ```{r generate_input_file_fullpaths}
 
   # Declare all sub-directory paths
-  proj_path <- paste0(dir_path,"/Data/Veterans")
+  proj_path <- paste(dir_path, dir.Data, dir.Scenario, sep = "/") 
   file_path <- paste(proj_path, dir.ELToD, sep = "/")
   analysis_path <- paste(proj_path, dir.Analysis, sep = "/")
   shape_path <- paste(proj_path, dir.Shape, sep = "/")
