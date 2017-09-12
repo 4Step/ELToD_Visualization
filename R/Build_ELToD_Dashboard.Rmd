@@ -1,0 +1,71 @@
+---
+title: "LOS_By_Segments"
+author: "Amar Sarvepalli"
+date: "September 7, 2017"
+output: 
+    flexdashboard::flex_dashboard:
+---
+
+```{r generate_input_file_fullpaths}
+
+  # Declare all sub-directory paths
+  proj_path <- paste(dir_path, dir.Data, dir.Scenario, sep = "/") 
+  file_path <- paste(proj_path, dir.ELToD, sep = "/")
+  analysis_path <- paste(proj_path, dir.Analysis, sep = "/")
+  shape_path <- paste(proj_path, dir.Shape, sep = "/")
+  
+  # Input file full-paths
+  pull_link_full_path <- paste(file_path, pull_link, sep="/") 
+  excel_template_full_path <- paste(file_path, excel_template, sep="/") 
+  shape_file_full_path <- paste(shape_path, shape_file, sep="/") 
+
+```
+
+
+
+```{r setup, include=FALSE}
+    source(paste0(dir_path,'/R/Load_Libraries_Settings.R'))
+```
+
+
+```{r read_model_outputs}
+
+  # Read ELToD raw files
+  if (!read_from_excel) {
+    source(paste0(dir_path,'/R/Read_ELToD_Outputs.R'))
+    
+    # Export ELToD Sumamries to Spreadsheets
+    if(export_summaries_to_excel){
+      source(paste0(dir_path,'/R/Export_ELToD_Output.R'))
+      
+    }
+  } else {
+    
+    # Read ELToD Summaries from Anslysis Spreadsheet
+    source(paste0(dir_path,'/R/Read_ELToD_Summaries.R'))
+  }
+   
+
+```
+
+
+```{r plot volume function}
+   # load function to animate
+   source(paste0(dir_path,'/R/Function_To_Plot_Volumes.R'))
+```
+
+
+```{r child = 'Volumes_by_Segment.Rmd'}
+
+```
+
+
+```{r child = 'Summary.Rmd'}
+
+```
+
+
+```{r child = 'LOS_by_Segment.Rmd'}
+
+```
+
