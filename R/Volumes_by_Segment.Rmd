@@ -1,0 +1,182 @@
+---
+title: "LOS_By_Segments"
+author: "Amar Sarvepalli"
+date: "September 7, 2017"
+output: 
+    flexdashboard::flex_dashboard:
+---
+
+
+
+```{r}
+plot_ymax <- df %>% 
+             group_by(Year) %>% 
+             summarize(GU_max = max(GU_SB_VOL, GU_NB_VOL), 
+                       EL_max = max(EL_SB_VOL, EL_NB_VOL))
+
+ymax_2020_GL <- plot_ymax %>% filter(Year == 2020) %>% select("GU_max") %>% round(-3)
+ymax_2020_EL <- plot_ymax %>% filter(Year == 2020) %>% select("EL_max") %>% round(-3)
+ymax_2040_GL <- plot_ymax %>% filter(Year == 2040) %>% select("GU_max") %>% round(-3) 
+ymax_2040_EL <- plot_ymax %>% filter(Year == 2040) %>% select("EL_max") %>% round(-3)
+
+```
+
+Year 2020 {data-navmenu="EL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2020: EL Old Policy 
+    Old Policy Definition: Where LOS-A is charged
+
+```{r Old policy 2020, include=TRUE}
+old_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "oldPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(ymax_2020_EL,FALSE)
+
+# Plot Old Polciy Volumes
+old_policy_2020
+```
+
+Row
+-------------------------------------
+### 2020: EL New Policy
+    New Policy Definition: Where LOS-A is NOT charged
+```{r New policy 2020}
+# Plot New Policy Volumes
+new_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "newPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(ymax_2020_EL,FALSE)
+
+new_policy_2020
+
+```
+
+
+
+Year 2040 {data-navmenu="EL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2040: EL Old Policy 
+    Old Policy Definition: Where LOS-A is charged    
+```{r Old policy 2040}
+old_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(ymax_2040_EL,FALSE)
+
+# Plot Old Policy Volumes
+old_policy_2040
+```
+   
+Row
+-------------------------------------
+### 2040: EL New Policy 
+    New Policy Definition: Where LOS-A is NOT charged 
+```{r New policy 2040}
+# Plot New Policy Volumes
+new_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(ymax_2040_EL,FALSE)
+
+new_policy_2040 
+```
+
+
+
+Year 2020 {data-navmenu="GL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2020: GL Old Policy 
+    Old Policy Definition: Where LOS-A is charged
+
+```{r GL Old policy 2020}
+old_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "oldPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(ymax_2020_GL,TRUE)
+
+# Plot Old Polciy Volumes
+old_policy_2020
+```
+
+Row
+-------------------------------------
+### 2020: GL New Policy
+    New Policy Definition: Where LOS-A is NOT charged
+```{r GL New policy 2020}
+# Plot New Policy Volumes
+new_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "newPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(ymax_2020_GL,TRUE)
+
+new_policy_2020
+
+```
+
+
+
+Year 2040 {data-navmenu="GL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2040: GL Old Policy 
+    Old Policy Definition: Where LOS-A is charged    
+```{r GL Old policy 2040}
+old_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(ymax_2040_GL,TRUE)
+
+# Plot Old Policy Volumes
+old_policy_2040
+```
+   
+Row
+-------------------------------------
+### 2040: GL New Policy 
+    New Policy Definition: Where LOS-A is NOT charged 
+```{r GL New policy 2040}
+# Plot New Policy Volumes
+new_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(ymax_2040_GL,TRUE)
+
+new_policy_2040
+```
+
+

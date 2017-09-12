@@ -1,0 +1,452 @@
+---
+title: "ELToD Results"
+author: "Amar Sarvepalli"
+date: "July 27, 2017"
+output:
+  flexdashboard::flex_dashboard:
+    keep_md: yes
+    theme: united
+  navbar:
+  - align: left
+    title: About
+---
+
+
+```{r setup, include=FALSE}
+
+#======================================================================
+# Check and install libraries 
+#======================================================================
+  required_packages <- c("knitr", "flexdashboard",
+                         "dplyr", "tidyr", 
+                         "DT", "data.table", "XLConnect", "foreign",
+                         "plotly", "rgdal", "leaflet")
+  
+  check_packages <- required_packages %in% rownames(installed.packages())
+  missing_packages <- required_packages[check_packages == FALSE]
+  
+  if (length(missing_packages) > 0) {
+    install.packages(missing_packages)
+  }
+  
+  sapply(required_packages, library, character.only = TRUE)
+  
+  
+  # Set chunk options
+  opts_knit$set(root.dir=normalizePath('../'))
+  opts_chunk$set(
+  	echo = FALSE,
+  	message = FALSE,
+  	warning = FALSE,
+  	fig.path = "figures/",
+    dev = 'png',
+    fig.keep = 'all',
+  	dev.args=list(type="cairo")
+  )
+  
+  
+  options(DT.options = list(pageLength = 5, language = list(search = 'Filter:')),
+          initComplete = JS(
+          "function(settings, json) {",
+          "$(this.api().table().header()).css({'background-color': '#000', 'color': '#fff'});",
+           "}"),
+          searchHighlight = TRUE, filter = 'none')
+
+  # config(plot_ly(), displaylogo = FALSE, collaborate = FALSE)
+```
+
+
+```{r User_Settings, echo=FALSE, message=FALSE, warning=FALSE}
+#======================================================================
+# Read data files
+#======================================================================
+  # Path settings
+  dir_path     <- "C:/projects/R-projects/ELToD_Visualization"
+  dir.Data     <- "Data"
+  dir.Scenario <- "Sawgrass"
+  dir.ELToD    <- "ELToD Results"
+  dir.Analysis <- "Analysis"
+  dir.Shape    <- "Project_Shape"
+  
+  # Scenario settings
+  policy    <- c("oldPolicy", "newPolicy")
+  scenarios <- c("Y2020Rev", "Y2040Rev")
+  Years     <- c(2020, 2040)
+  
+  # filenames and pull links
+  filenames <- paste0("VOL",c(1:24),".csv")
+  pull_link <- "Pull_Link_Dir.csv"
+  
+  # output excel files, segment starting rows
+  excel_template <- "Template.xlsx"
+  segments <- c(1:6)
+  seg_data_start_rows <- c(6, 51, 96, 141, 186, 231)
+  sheet_name = "Output"
+  old_outfiles <- c("Output_2020A1.xlsx", "Output_2040A1.xlsx")
+  new_outfiles <- c("Output_2020A2.xlsx", "Output_2040A2.xlsx")
+  
+  # Excel Summary file
+  # A choice to read data from excel spreadsheets instead of standard ELToD outputs
+  read_from_excel <- TRUE
+  
+  # when read_from_excel is false, should it write to excel summaries
+  export_summaries_to_excel <- FALSE
+  
+  # excel_summary_file <- "Result_Veterans_2017-0818_2020_uses_original_hourly_distribution.xlsx"
+  
+  # Display project on map (Dashboard 'Summary' tab)
+  display_Project <- TRUE
+  shape_file <- "Sawgrass_Express_v4-3.shp"
+  
+
+```
+
+
+```{r generate_input_file_fullpaths}
+
+  # Declare all sub-directory paths
+  proj_path <- paste(dir_path, dir.Data, dir.Scenario, sep = "/") 
+  file_path <- paste(proj_path, dir.ELToD, sep = "/")
+  analysis_path <- paste(proj_path, dir.Analysis, sep = "/")
+  shape_path <- paste(proj_path, dir.Shape, sep = "/")
+  
+  # Input file full-paths
+  pull_link_full_path <- paste(file_path, pull_link, sep="/") 
+  excel_template_full_path <- paste(file_path, excel_template, sep="/") 
+  shape_file_full_path <- paste(shape_path, shape_file, sep="/") 
+  
+  # excel_summary_full_path <- paste(analysis_path, excel_summary_file, sep ="/") 
+
+```
+
+
+
+```{r read_model_outputs}
+
+  # Read ELToD raw files
+  if (!read_from_excel) {
+    source(paste0(dir_path,'/R/Read_ELToD_Outputs.R'))
+    
+    # Export ELToD Sumamries to Spreadsheets
+    if(export_summaries_to_excel){
+      source(paste0(dir_path,'/R/Export_ELToD_Output.R'))
+      
+    }
+  } else {
+    
+    # Read ELToD Summaries from Anslysis Spreadsheet
+    source(paste0(dir_path,'/R/Read_ELToD_Summaries.R'))
+  }
+   
+
+```
+
+
+```{r plot volume function}
+   # load function to animate
+   source(paste0(dir_path,'/R/Function_To_Plot_Volumes.R'))
+```
+
+
+Year 2020 {data-navmenu="EL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2020: EL Old Policy 
+    Old Policy Definition: Where LOS-A is charged
+
+```{r Old policy 2020, include=TRUE}
+old_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "oldPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(1000,FALSE)
+
+# Plot Old Polciy Volumes
+old_policy_2020
+```
+
+Row
+-------------------------------------
+### 2020: EL New Policy
+    New Policy Definition: Where LOS-A is NOT charged
+```{r New policy 2020}
+# Plot New Policy Volumes
+new_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "newPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(1000,FALSE)
+
+new_policy_2020
+
+```
+
+
+
+Year 2040 {data-navmenu="EL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2040: EL Old Policy 
+    Old Policy Definition: Where LOS-A is charged    
+```{r Old policy 2040}
+old_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(2000,FALSE)
+
+# Plot Old Policy Volumes
+old_policy_2040
+```
+   
+Row
+-------------------------------------
+### 2040: EL New Policy 
+    New Policy Definition: Where LOS-A is NOT charged 
+```{r New policy 2040}
+# Plot New Policy Volumes
+new_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy") %>%
+              select(Seg, Hour, EL_SB_VOL, EL_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(2000,FALSE)
+
+new_policy_2040 
+```
+
+
+
+Year 2020 {data-navmenu="GL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2020: GL Old Policy 
+    Old Policy Definition: Where LOS-A is charged
+
+```{r GL Old policy 2020}
+old_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "oldPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(4000,TRUE)
+
+# Plot Old Polciy Volumes
+old_policy_2020
+```
+
+Row
+-------------------------------------
+### 2020: GL New Policy
+    New Policy Definition: Where LOS-A is NOT charged
+```{r GL New policy 2020}
+# Plot New Policy Volumes
+new_policy_2020 <- df %>%
+              filter(Year == 2020, Policy == "newPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>%
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>%
+              plot_volumes(4000,TRUE)
+
+new_policy_2020
+
+```
+
+
+
+Year 2040 {data-navmenu="GL Volumes"}   
+=====================================
+Row
+-------------------------------------
+    
+### 2040: GL Old Policy 
+    Old Policy Definition: Where LOS-A is charged    
+```{r GL Old policy 2040}
+old_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "oldPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(6000,TRUE)
+
+# Plot Old Policy Volumes
+old_policy_2040
+```
+   
+Row
+-------------------------------------
+### 2040: GL New Policy 
+    New Policy Definition: Where LOS-A is NOT charged 
+```{r GL New policy 2040}
+# Plot New Policy Volumes
+new_policy_2040 <- df %>% 
+              filter(Year == 2040, Policy == "newPolicy") %>%
+              select(Seg, Hour, GU_SB_VOL, GU_NB_VOL ) %>% 
+              gather(-Seg, -Hour, key = direction, value = Volume) %>%
+              mutate(Segment = paste0("Seg ", Seg, direction)) %>%
+              select(Segment, Hour, Volume ) %>% 
+              plot_volumes(6000,TRUE)
+
+new_policy_2040
+```
+
+
+Summary {data-navmenu="Summary"} 
+=====================================
+
+
+```{r plot v/c}
+  # Function to plot v/c ratios
+  source(paste0(dir_path,'/R/Function_To_Plot_VoC.R'))
+```
+
+
+```{r LOS summaries}
+### 2040: Old Policy Segment 2: Anderson
+los_vol <- df %>% 
+         select(Year, Policy, Seg, Hour, 
+                GU_NB_VOL, GU_SB_VOL, EL_NB_VOL, EL_SB_VOL,
+                EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>%
+         gather(-Year, -Policy, -Seg, -Hour, -GU_NB_VOL, -GU_SB_VOL, -EL_NB_VOL, -EL_SB_VOL,
+                key = Dir, value = vc) %>%
+         mutate(EL_NB_VOL = ifelse(Dir == "EL_NB_VC_RATIO", EL_NB_VOL, 0),
+                EL_SB_VOL = ifelse(Dir == "EL_SB_VC_RATIO", EL_SB_VOL, 0),
+                GU_NB_VOL = ifelse(Dir == "EL_NB_VC_RATIO", GU_NB_VOL, 0),
+                GU_SB_VOL = ifelse(Dir == "EL_SB_VC_RATIO", GU_SB_VOL, 0),
+                GU_TOT =  GU_NB_VOL + GU_SB_VOL,
+                EL_TOT = EL_NB_VOL + EL_SB_VOL,
+                TOT = GU_TOT + EL_TOT,
+                LOS = ifelse(vc < 0.3, "A",
+                             ifelse(vc >= 0.5, "C", "B")
+                             )
+                ) %>%
+         group_by(Year, Policy, Seg, LOS) %>%
+         summarise(EL = sum(EL_TOT),
+                   Corridor = sum(TOT),
+                   EL_Share = EL / Corridor
+                   )%>%
+         arrange(Year, Policy)
+
+los_EL <- los_vol %>% 
+          select(-EL_Share, -Corridor) %>%
+          spread(Policy, EL) %>%
+          mutate_each(funs(replace(.,is.na(.),0)))
+
+los_EL_shares <- los_vol %>% 
+          select(-EL, -Corridor) %>%
+          spread(Policy, EL_Share) %>%
+          mutate_each(funs(replace(.,is.na(.),0)))
+
+# Compute trips paying by LOS
+los_paying <- los_vol %>% 
+          select(-EL_Share, -Corridor) %>%
+          spread(Policy, EL) %>%
+          mutate_each(funs(replace(.,is.na(.),0))) %>%
+          mutate(old_pay = oldPolicy,
+                 new_pay = ifelse(LOS == "A", 0, newPolicy)) %>%
+          select(Year, Seg, LOS, oldPolicy = old_pay, newPolicy = new_pay)
+          
+```
+
+
+Column {data-width=350}
+-------------------------------------
+### Volumes by LOS 
+```{r} 
+los_EL_all <- los_EL %>% 
+              group_by(Year, LOS) %>% 
+              summarise_each(funs(sum))%>% 
+              select(-Seg)  %>%
+              gather(-Year, -LOS, key = Policy, value = trips) %>% 
+              spread(LOS, trips) %>% 
+              mutate_each(funs(replace(.,is.na(.),0))) %>%
+              mutate(Total = A + B + C)
+
+datatable(
+  los_EL_all, 
+  options = list(dom  = 't'),
+  rownames = FALSE
+)
+
+```
+
+### Trips paying
+```{r} 
+los_paying_all <- los_paying %>% 
+              group_by(Year, LOS) %>% 
+              summarise_each(funs(sum))%>% 
+              select(-Seg) %>%
+              gather(-Year, -LOS, key = Policy, value = trips) %>% 
+              spread(LOS, trips) %>% 
+              mutate_each(funs(replace(.,is.na(.),0))) %>%
+              mutate(Total = A + B + C)
+
+datatable(
+  los_paying_all, 
+  options = list(dom  = 't'),
+  rownames = FALSE
+)
+
+```
+
+
+
+```{r}
+
+x <- los_EL %>% 
+     gather(-Year, -LOS, -Seg, key = Policy, value = trips) %>% 
+     spread(LOS, trips) %>% 
+     mutate_each(funs(replace(.,is.na(.),0))) %>%
+     mutate(Total = A + B + C) %>%
+     arrange(Policy, Year, Seg) %>% 
+     ungroup()
+
+
+# Old policy
+x_old <- x %>% filter(Policy == "oldPolicy", Year == 2020)
+
+datatable(x_old, options = list(dom = 't')) %>%
+  formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+
+# New policy
+x_new <- x %>% filter(Policy == "newPolicy", Year == 2020)
+
+datatable(x_new, options = list(dom = 't')) %>%
+  formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+
+
+```
+
+
+Column {data-width=700}
+-------------------------------------
+### Map of Veterans Expressway
+
+```{r Map, message=FALSE, warning=FALSE, echo = FALSE}
+
+  source(paste0(dir_path,'/R/Map_Corridor_Location.R'))
+  map
+
+```
+
+
+```{r child = 'R/LOS_by_Segment.Rmd'}
+
+```
+

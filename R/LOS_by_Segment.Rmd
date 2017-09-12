@@ -8,14 +8,10 @@ output:
 
 Year 2020: {data-navmenu="LOS"} 
 =====================================
-
-<!-- Column {data-width=250} -->
-<!-- ------------------------------------- -->
-<!-- ### Level of Service (LOS)  -->
-
-<!-- * LOS A: V/C below 0.3 -->
-<!-- * LOS B: V/C between 0.3 and 0.5 -->
-<!-- * LOS C: V/C above 0.5 -->
+```{r plot v/c}
+  # Function to plot v/c ratios
+  source(paste0(dir_path,'/R/Function_To_Plot_VoC.R'))
+```
 
 Column {data-width=350}
 -------------------------------------
@@ -83,11 +79,6 @@ Year 2040: {data-navmenu="LOS"}
 
 Column {data-width=350}
 -------------------------------------
-<!-- ### Level of Service (LOS)  -->
-
-<!-- * LOS A: V/C below 0.3 -->
-<!-- * LOS B: V/C between 0.3 and 0.5 -->
-<!-- * LOS C: V/C above 0.5 -->
 
 ### EL Volumes
 ```{r}

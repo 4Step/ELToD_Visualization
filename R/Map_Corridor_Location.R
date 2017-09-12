@@ -22,7 +22,7 @@ map <- leaflet() %>%
       addProviderTiles("Stamen.Toner",group = "Stamen") %>%
       addProviderTiles('CartoDB.Positron') %>%
       addTiles(group = "OSM") %>%
-      setView(lng = -82.5381, lat = 28.0679, zoom = 11) %>%
+      setView(lng = map_center_lng, lat = map_center_lat, zoom = map_zoom) %>%
   
       # Add shapefile contents
       addPolylines(data = shapeData_FreeLinks, stroke = TRUE, smoothFactor = 1, weight = 2, 

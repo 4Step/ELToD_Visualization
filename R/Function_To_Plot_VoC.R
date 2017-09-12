@@ -140,7 +140,7 @@ plot_los <- function(df){
     visible_Seg[(2 * s - 1) : (2 * s)] <- c(TRUE,TRUE)
     buttons_Segment = c(buttons_Segment, list( list( method = "restyle",
                                                      args = list("visible", visible_Seg),
-                                                     label = paste0("Segment-",s))))    
+                                                     label = paste0("Seg-",s))))    
   }
   
   # Add All segments
@@ -158,7 +158,7 @@ plot_los <- function(df){
                           list(
                               type = "buttons",
                               yanchor = "top",
-                              xanchor = "center",
+                              xanchor = "left",
                               direction = "right",
                               bgcolor = "lightblue",
                               font = list(color = "darkgrey"),

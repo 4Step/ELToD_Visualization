@@ -1,0 +1,141 @@
+---
+title: "LOS_By_Segments"
+author: "Amar Sarvepalli"
+date: "September 7, 2017"
+output: 
+    flexdashboard::flex_dashboard:
+---
+
+
+Summary {data-navmenu="Summary"} 
+=====================================
+
+```{r LOS summaries}
+### 2040: Old Policy Segment 2: Anderson
+los_vol <- df %>% 
+         select(Year, Policy, Seg, Hour, 
+                GU_NB_VOL, GU_SB_VOL, EL_NB_VOL, EL_SB_VOL,
+                EL_NB_VC_RATIO, EL_SB_VC_RATIO) %>%
+         gather(-Year, -Policy, -Seg, -Hour, -GU_NB_VOL, -GU_SB_VOL, -EL_NB_VOL, -EL_SB_VOL,
+                key = Dir, value = vc) %>%
+         mutate(EL_NB_VOL = ifelse(Dir == "EL_NB_VC_RATIO", EL_NB_VOL, 0),
+                EL_SB_VOL = ifelse(Dir == "EL_SB_VC_RATIO", EL_SB_VOL, 0),
+                GU_NB_VOL = ifelse(Dir == "EL_NB_VC_RATIO", GU_NB_VOL, 0),
+                GU_SB_VOL = ifelse(Dir == "EL_SB_VC_RATIO", GU_SB_VOL, 0),
+                GU_TOT =  GU_NB_VOL + GU_SB_VOL,
+                EL_TOT = EL_NB_VOL + EL_SB_VOL,
+                TOT = GU_TOT + EL_TOT,
+                LOS = ifelse(vc < 0.3, "A",
+                             ifelse(vc >= 0.5, "C", "B")
+                             )
+                ) %>%
+         group_by(Year, Policy, Seg, LOS) %>%
+         summarise(EL = sum(EL_TOT),
+                   Corridor = sum(TOT),
+                   EL_Share = EL / Corridor
+                   )%>%
+         arrange(Year, Policy)
+
+los_EL <- los_vol %>% 
+          select(-EL_Share, -Corridor) %>%
+          spread(Policy, EL) %>%
+          mutate_each(funs(replace(.,is.na(.),0)))
+
+los_EL_shares <- los_vol %>% 
+          select(-EL, -Corridor) %>%
+          spread(Policy, EL_Share) %>%
+          mutate_each(funs(replace(.,is.na(.),0)))
+
+# Compute trips paying by LOS
+los_paying <- los_vol %>% 
+          select(-EL_Share, -Corridor) %>%
+          spread(Policy, EL) %>%
+          mutate_each(funs(replace(.,is.na(.),0))) %>%
+          mutate(old_pay = oldPolicy,
+                 new_pay = ifelse(LOS == "A", 0, newPolicy)) %>%
+          select(Year, Seg, LOS, oldPolicy = old_pay, newPolicy = new_pay)
+          
+```
+
+
+Column {data-width=350}
+-------------------------------------
+### Volumes by LOS 
+```{r} 
+los_EL_all <- los_EL %>% 
+              group_by(Year, LOS) %>% 
+              summarise_each(funs(sum))%>% 
+              select(-Seg)  %>%
+              gather(-Year, -LOS, key = Policy, value = trips) %>% 
+              spread(LOS, trips) %>% 
+              mutate_each(funs(replace(.,is.na(.),0))) %>%
+              mutate(Total = A + B + C)
+
+datatable(
+  los_EL_all, 
+  options = list(dom  = 't'),
+  rownames = FALSE
+)
+
+```
+
+
+### Trips paying
+```{r} 
+los_paying_all <- los_paying %>% 
+              group_by(Year, LOS) %>% 
+              summarise_each(funs(sum))%>% 
+              select(-Seg) %>%
+              gather(-Year, -LOS, key = Policy, value = trips) %>% 
+              spread(LOS, trips) %>% 
+              mutate_each(funs(replace(.,is.na(.),0))) %>%
+              mutate(Total = A + B + C)
+
+datatable(
+  los_paying_all, 
+  options = list(dom  = 't'),
+  rownames = FALSE
+)
+
+```
+
+
+
+```{r}
+
+x <- los_EL %>% 
+     gather(-Year, -LOS, -Seg, key = Policy, value = trips) %>% 
+     spread(LOS, trips) %>% 
+     mutate_each(funs(replace(.,is.na(.),0))) %>%
+     mutate(Total = A + B + C) %>%
+     arrange(Policy, Year, Seg) %>% 
+     ungroup()
+
+
+# Old policy
+x_old <- x %>% filter(Policy == "oldPolicy", Year == 2020)
+
+datatable(x_old, options = list(dom = 't')) %>%
+  formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+
+# New policy
+x_new <- x %>% filter(Policy == "newPolicy", Year == 2020)
+
+datatable(x_new, options = list(dom = 't')) %>%
+  formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
+
+
+```
+
+
+Column {data-width=700}
+-------------------------------------
+### Map of  `r map_title`
+
+```{r Map, message=FALSE, warning=FALSE, echo = FALSE}
+
+  source(paste0(dir_path,'/R/Map_Corridor_Location.R'))
+  map
+
+```
+
