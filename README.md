@@ -8,8 +8,15 @@ This study involved in evaluating the revenue impacts resulting from a change in
 
 
 ## Flexdashboard:
-Dashboard to view ELToD outputs. The initial tool was built for debugging which later transformed into an analysis tool. Given the frequency of the model runs and reviews, it maybe best to convert the analysis template into summary dashboard.  Currently the outputs are produced to a html dashboard where each tab is defined to show the specific ELToD results that are of interest to finance team. In this version each project corridor is produced as a html document and uses settings file. There is one settings file \*.RMD per corridor (example *ELToD Results_Veterans.RMD*)
+Dashboard to view ELToD outputs. The initial tool was built for debugging which later transformed into an analysis tool. Given the frequency of the model runs and reviews, it maybe best to convert the analysis template into summary dashboard.  Currently the outputs are produced to a html dashboard where each tab is defined to show the specific ELToD results that are of interest to planning (traffic and modeling) and finance teams.
 
+1. [Veterans](https://cdn.rawgit.com/4Step/ELToD_Visualization/888ebe79/ELToD_Results_Veterans.html)
+2. [NCoin](https://cdn.rawgit.com/4Step/ELToD_Visualization/888ebe79/ELToD_Results_NCoin.html)
+3. [Beachline  West](https://cdn.rawgit.com/4Step/ELToD_Visualization/888ebe79/ELToD_Results_BLW.html)
+4. [Sawgrass](https://cdn.rawgit.com/4Step/ELToD_Visualization/888ebe79/ELToD_Results_Sawgrass.html)
+5. [HEFT](https://cdn.rawgit.com/4Step/ELToD_Visualization/888ebe79/ELToD_Results_HEFT.html)
+
+*The html outputs are produced to the same root directory. However, in order to quickly display these files from Github without downloading, the above html links are created via [RawGit](http://rawgit.com/).*
 
 ## Inputs:
 The original debugger read the data straight from the ELToD model working directories. The debugger allowed to display a change in path (toll vs no-toll) for a selected OD pair by assignment iteration. Further this allowed to study probability shares resulting from the binary logit model.
@@ -21,7 +28,9 @@ The dashboard is built with same logic but since summaries are already produced 
 1. ELToD working directories (old and new toll pricing runs)
 2. ELToD Excel Summaries.
 
-The following are the inputs to run this dashboard.
+In this version each project corridor is produced as a html document. The code to read data, modify plots, maps and tables is common to all projects and is stored under R folder. Each project specification is provided through a settings file. There is one settings file \*.RMD per corridor (example *ELToD Results_Veterans.RMD*) which is located in the root directory.
+
+The following are the specification to produce corridor specific dashboard.
 
 #### 1: Path Settings
      dir_path     <- "C:/projects/R-projects/ELToD_Visualization"  
