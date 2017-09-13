@@ -2,21 +2,26 @@
 Express Lanes Time of Day Model Visualization Toolbox
 
 ## Project:
-The Express Lanes Time of Day Model (ELToD) is a traffic assignment (path choice) binary logit model to estimate express lane trips by hour. The final outputs are link volume files (VOL.csv) near toll plazas (user defined pull links). These links cover both fixed toll links (aka turnpike and other flat toll general purpose lanes) as well as dynamic toll links (express lane tolls) and the output files include, free flow and congested travel times, volumes, capacities and assessed tolls by segment, OD pair and assignment iteration.
+The Express Lanes Time of Day Model (ELToD) is a traffic assignment (path choice) binary logit model to estimate express lane trips by hour. The final outputs are link volume files (VOL.csv) generated at user specified locations usually near toll plazas (defined through pull_links.csv). These links cover both general use lanes and express lanes (a.k.a general use are regular turnpike lanes with fixed tolls and express lanes are dynamically priced tolls on top of general use tolls) and the output files include OD pair, assignment iteration free flow and congested variables by toll and non-toll facility types. The variables include travel times, volumes, capacities and assessed tolls by segment.
 
-The recent study involved in evaluating the revenue impacts of a change in toll pricing legislation. The current system charges dynamic tolls on express lanes irrespective of congestion (all level of service users pay a minimum toll). The recent change in legislation allows users experiencing no congestion (LOS-A, defined as v/c less than 0.3) to take express lanes at no additional toll (beyond the flat toll paid on general use lanes). The dynamic tolls charged based on the LOS are assessed when congestion escalates (from LOS-B: defined as v/c greater than 0.3). The toll pricing curves tested are very similar expect that the initial one charges a minimum toll when there is no congestion and the later is free. The anticipated results were: there will be more LOS-A express lane trips due to free of additional tolls and the toll revenue is going to drop. The study assess the magnitude of the revenue drop for future years.
+This study involved in evaluating the revenue impacts resulting from a change in toll pricing legislation. The old pricing policy charges a minimum toll on express lanes and dynamically increases based on congestion levels. The new pricing policy (a result of new legislation) allows no minimum (tolls set to zero) if there is no congestion. The congestion is measured as density per mile, and since it is extremely hard to measure density in a static travel demand model, congestion is this is computed as volume to capacity ratio (v/c). Based on v/c value service levels are defined as: LOS-A with v/c below 0.3, LOS-B: v/c between 0.3 and 0.5, LOS-C: v/c above 0.5. The recent change in legislation allows users experiencing no congestion (LOS-A, defined as v/c less than 0.3) to take express lanes at no additional toll (beyond the flat toll paid on general use lanes). The dynamic tolls charged based on the LOS are assessed when congestion escalates (from LOS-B: defined as v/c greater than 0.3). The toll pricing curves tested are very similar expect that the initial one charges a minimum toll when there is no congestion and the later is free. The anticipated results were: there will be more LOS-A express lane trips due to free of additional tolls and the toll revenue is going to drop. The study assess the magnitude of the change in revenue for future years.
 
-## Background:
-Dashboard to view ELToD outputs. The initial tool was built for debugging, later transformed into an analysis tool. Given the frequency of the model runs and reviews, it maybe best to convert the analysis template into summary dashboard.  
 
 ## Flexdashboard:
-Currently the outputs are produced to a html dashboard where each tab is defined to show the ELToD results for each of the toll segments. In this version each corridor is produced as a html document via settings file. There is one setting \*.RMD per corridor (example *ELToD Results_Veterans.RMD*)
+Dashboard to view ELToD outputs. The initial tool was built for debugging which later transformed into an analysis tool. Given the frequency of the model runs and reviews, it maybe best to convert the analysis template into summary dashboard.  Currently the outputs are produced to a html dashboard where each tab is defined to show the specific ELToD results that are of interest to finance team. In this version each project corridor is produced as a html document and uses settings file. There is one settings file \*.RMD per corridor (example *ELToD Results_Veterans.RMD*)
+
 
 ## Inputs:
-The initial debugging template reads data straight from the working directories. The analysis tool reads the data from the same directories but writes out the summary tables in excel format. The dashboard is built on top of these two tools and allows both methods to exists. The following are the inputs to run this dashboard.
+The original debugger read the data straight from the ELToD model working directories. The debugger allowed to display a change in path (toll vs no-toll) for a selected OD pair by assignment iteration. Further this allowed to study probability shares resulting from the binary logit model.
+
+A second tool was developed to tabulate the summary data into excel spreadsheet. This tool also read the data from the same directories and wrote out the summary tables in excel format. This tool uses a pre-existing Excel Template to write out data (template contained excel formats and tool pasted data into the specified rows).
+
+The dashboard is built with same logic but since summaries are already produced via second tool there is no point to redo the same effort. Thus two following options are built into the dashboard.
 
 1. ELToD working directories (old and new toll pricing runs)
 2. ELToD Excel Summaries.
+
+The following are the inputs to run this dashboard.
 
 #### 1: Path Settings
      dir_path     <- "C:/projects/R-projects/ELToD_Visualization"  
