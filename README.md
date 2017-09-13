@@ -35,7 +35,7 @@ The following are the specification to produce corridor specific dashboard.
 #### 1: Path Settings
      dir_path     <- "C:/projects/R-projects/ELToD_Visualization"  
      dir.Data     <- "Data"  
-     **dir.Scenario <- "HEFT"**  
+     dir.Scenario <- "HEFT" 
      dir.ELToD    <- "ELToD Results"  
      dir.Analysis <- "Analysis"  
      dir.Shape    <- "Project_Shape"  
