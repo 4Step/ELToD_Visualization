@@ -60,6 +60,7 @@ los_paying <- los_vol %>%
 
 Column {data-width=350}
 -------------------------------------
+
 ### Volumes by LOS 
 ```{r} 
 los_EL_all <- los_EL %>% 
@@ -76,6 +77,8 @@ datatable(
   options = list(dom  = 't'),
   rownames = FALSE
 )
+
+
 
 ```
 
@@ -100,7 +103,25 @@ datatable(
 ```
 
 
+Column {data-width=700}
+-------------------------------------
+### Map of  `r map_title`
 
+```{r Map, message=FALSE, warning=FALSE, echo = FALSE}
+
+  source(paste0(dir_path,'/R/Map_Corridor_Location.R'))
+  map
+
+```
+
+
+By Segment {data-navmenu="Summary"} 
+=====================================
+
+Column {data-width=500}{.tabset}
+-------------------------------------
+
+### 2020 Volumes by Segment: Old Policy 
 ```{r}
 
 x <- los_EL %>% 
@@ -115,27 +136,57 @@ x <- los_EL %>%
 # Old policy
 x_old <- x %>% filter(Policy == "oldPolicy", Year == 2020)
 
-datatable(x_old, options = list(dom = 't')) %>%
+datatable(x_old) %>%
   formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
 
+```
+
+### 2040 Volumes by Segment: Old Policy 
+```{r}
+
+x <- los_EL %>% 
+     gather(-Year, -LOS, -Seg, key = Policy, value = trips) %>% 
+     spread(LOS, trips) %>% 
+     mutate_each(funs(replace(.,is.na(.),0))) %>%
+     mutate(Total = A + B + C) %>%
+     arrange(Policy, Year, Seg) %>% 
+     ungroup()
+
+
+# Old policy
+x_old <- x %>% filter(Policy == "oldPolicy", Year == 2040)
+
+datatable(x_old) %>%
+  formatStyle('A',  color = 'yellow', backgroundColor = 'darkgreen', fontWeight = 'bold')
+
+
+```
+
+
+Column {data-width=500}{.tabset}
+-------------------------------------
+
+### 2020 Volumes by Segment: New Policy 
+```{r}
 # New policy
 x_new <- x %>% filter(Policy == "newPolicy", Year == 2020)
 
-datatable(x_new, options = list(dom = 't')) %>%
+datatable(x_new) %>%
   formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
 
 
 ```
 
 
-Column {data-width=700}
--------------------------------------
-### Map of  `r map_title`
+### 2040 Volumes by Segment: New Policy  
+```{r}
 
-```{r Map, message=FALSE, warning=FALSE, echo = FALSE}
+# New policy
+x_new <- x %>% filter(Policy == "newPolicy", Year == 2040)
 
-  source(paste0(dir_path,'/R/Map_Corridor_Location.R'))
-  map
+datatable(x_new) %>%
+  formatStyle('A',  color = 'yellow', backgroundColor = 'darkgreen', fontWeight = 'bold')
+
 
 ```
 
