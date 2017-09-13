@@ -51,8 +51,8 @@ output:
   # Display project on map (Dashboard 'Summary' tab)
   display_Project <- TRUE
   shape_file      <- "Veterans_v2.shp"
-  map_center_lat  <-  28.0396  #  26.13874  
-  map_center_lng  <- -82.5463  # -80.3155  
+  map_center_lat  <-  28.0396  
+  map_center_lng  <- -82.5463 
   map_zoom        <-  11
   map_title       <- "Veterans Expressway"
 ```
