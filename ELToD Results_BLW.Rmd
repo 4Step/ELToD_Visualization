@@ -51,9 +51,9 @@ output:
   # Display project on map (Dashboard 'Summary' tab)
   display_Project <- TRUE
   shape_file      <- "BLW_Subarea_YR40v3.shp"
-  map_center_lat  <-  28.5338738
-  map_center_lng  <- -81.3747066  
-  map_zoom        <-  11
+  map_center_lat  <-  28.4171971
+  map_center_lng  <- -81.4340852  
+  map_zoom        <-  13
   map_title       <- "Beachline West Expressway"  
 
 ```
