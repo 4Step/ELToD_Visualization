@@ -134,7 +134,7 @@ x <- los_EL %>%
 
 
 # Old policy
-x_old <- x %>% filter(Policy == "oldPolicy", Year == 2020)
+x_old <- x %>% filter(Policy == policy[1], Year == 2020)
 
 datatable(x_old) %>%
   formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
@@ -154,7 +154,7 @@ x <- los_EL %>%
 
 
 # Old policy
-x_old <- x %>% filter(Policy == "oldPolicy", Year == 2040)
+x_old <- x %>% filter(Policy == policy[1], Year == 2040)
 
 datatable(x_old) %>%
   formatStyle('A',  color = 'yellow', backgroundColor = 'darkgreen', fontWeight = 'bold')
@@ -169,7 +169,7 @@ Column {data-width=500}{.tabset}
 ### 2020 Volumes by Segment: New Policy 
 ```{r}
 # New policy
-x_new <- x %>% filter(Policy == "newPolicy", Year == 2020)
+x_new <- x %>% filter(Policy == policy[2], Year == 2020)
 
 datatable(x_new) %>%
   formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
@@ -182,7 +182,7 @@ datatable(x_new) %>%
 ```{r}
 
 # New policy
-x_new <- x %>% filter(Policy == "newPolicy", Year == 2040)
+x_new <- x %>% filter(Policy == policy[2], Year == 2040)
 
 datatable(x_new) %>%
   formatStyle('A',  color = 'yellow', backgroundColor = 'darkgreen', fontWeight = 'bold')
