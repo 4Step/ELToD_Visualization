@@ -53,7 +53,7 @@ plot_volumes <- function(df, max_volume, isGL) {
     # marker = list(color = bar_colors,
     #               line = list(color = bar_colors)),
     type = 'bar',
-    mode = 'lines',
+    # mode = 'lines',
     showlegend = T
   )  %>%
   layout(title = title_txt,

@@ -6,9 +6,6 @@ output:
   flexdashboard::flex_dashboard:
     keep_md: yes
     theme: united
-  navbar:
-  - align: left
-    title: About
 ---
 
 

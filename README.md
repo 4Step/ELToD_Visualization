@@ -10,13 +10,21 @@ This study is aimed at evaluating the revenue impacts resulting from a change in
 ## Flexdashboard:
 Dashboard to view ELToD outputs. The initial tool was built for debugging which later transformed into an analysis tool. Given the frequency of the model runs and reviews, it maybe best to convert the analysis template into summary dashboard.  Currently the outputs are produced to a html dashboard where each tab is defined to show the specific ELToD results that are of interest to planning (traffic and modeling) and finance teams.
 
-1. [Veterans](https://cdn.rawgit.com/4Step/ELToD_Visualization/e1290453/ELToD_Results_Veterans.html)
-2. [NCoin](https://cdn.rawgit.com/4Step/ELToD_Visualization/e1290453/ELToD_Results_NCoin.html)
-3. [Beachline  West](https://cdn.rawgit.com/4Step/ELToD_Visualization/e1290453/ELToD_Results_BLW.html)
-4. [Sawgrass](https://cdn.rawgit.com/4Step/ELToD_Visualization/e1290453/ELToD_Results_Sawgrass.html)
-5. [HEFT](https://cdn.rawgit.com/4Step/ELToD_Visualization/e1290453/ELToD_Results_HEFT.html)
+1. Veterans
+2. NCoin
+3. Beachline  West
+4. Sawgrass
+5. HEFT
 
-*The html outputs are produced to the same root directory. However, in order to quickly display these files from Github without downloading, the above html links are created via [RawGit](http://rawgit.com/).*
+
+## Required R-Packages:
+  "knitr", "flexdashboard",
+  "dplyr", "tidyr",
+  "DT", "data.table", "XLConnect", "foreign",
+  "plotly", "rgdal", "leaflet"
+
+Additional Packages to save as images:    
+    "webshot", "webshot::install_phantomjs()"  
 
 ## Inputs:
 The original debugger read the data straight from the ELToD model working directories. The debugger allowed to display a change in path (toll vs no-toll) for a selected OD pair by assignment iteration. Further this allowed to study probability shares resulting from the binary logit model.
@@ -35,7 +43,7 @@ The following are the specification to produce corridor specific dashboard.
 #### 1: Path Settings
      dir_path     <- "C:/projects/R-projects/ELToD_Visualization"  
      dir.Data     <- "Data"  
-     dir.Scenario <- "HEFT" 
+     dir.Scenario <- "HEFT"
      dir.ELToD    <- "ELToD Results"  
      dir.Analysis <- "Analysis"  
      dir.Shape    <- "Project_Shape"  

@@ -40,6 +40,12 @@ old_policy_2020 <- df %>%
 
 # Plot Old Polciy Volumes
 old_policy_2020
+
+# tmpFile <- tempfile(fileext = ".png")
+export(old_policy_2020, "Output_Graphs/old_policy_2020.png")
+# htmlwidgets::saveWidget(as.widget(old_policy_2020), "index.html")
+
+
 ```
 
 Row
@@ -57,7 +63,7 @@ new_policy_2020 <- df %>%
               plot_volumes(ymax_2020_EL,FALSE)
 
 new_policy_2020
-
+export(new_policy_2020, "Output_Graphs/new_policy_2020.png")
 ```
 
 
@@ -80,6 +86,7 @@ old_policy_2040 <- df %>%
 
 # Plot Old Policy Volumes
 old_policy_2040
+export(old_policy_2040, "Output_Graphs/old_policy_2040.png")
 ```
    
 Row
@@ -97,6 +104,7 @@ new_policy_2040 <- df %>%
               plot_volumes(ymax_2040_EL,FALSE)
 
 new_policy_2040 
+export(new_policy_2040, "Output_Graphs/new_policy_2040.png")
 ```
 
 
