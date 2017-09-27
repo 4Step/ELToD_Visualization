@@ -15,6 +15,13 @@ shapeData_egressLinks <- subset(shapeData, shapeData$FTYPE == 98)
 shapeData_FreeLinks   <- subset(shapeData, shapeData$FTYPE == 91)
 shapeData_other       <- subset(shapeData, shapeData$FTYPE  < 91)
 
+
+  link_colors <- c("blue", "green", "orange", "pink", "grey", "red")
+  link_labels <- c("General Use", "Express Way", "On Ramps", "Off Ramps", 
+                   "All Other Roads", "Toll Plaza")
+  
+  legend_colors <- rgb(t(col2rgb(link_colors)) / 255)
+  
 # Create leaflet map with project
 map <- leaflet() %>%
       
@@ -26,15 +33,15 @@ map <- leaflet() %>%
   
       # Add shapefile contents
       addPolylines(data = shapeData_FreeLinks, stroke = TRUE, smoothFactor = 1, weight = 2, 
-                  color = "blue", group = "General Use") %>%
+                  color = link_colors[1], group = link_labels[1]) %>%
       addPolylines(data = shapeData_expLinks, stroke = TRUE, smoothFactor = 1, weight = 3, 
-                  color = "green", group = "Express Way") %>%
+                  color = link_colors[2], group = link_labels[2]) %>%
       addPolylines(data = shapeData_accessLinks, stroke = TRUE, smoothFactor = 1, weight = 7, 
-                  color = "orange", group = "On Ramps") %>%
+                  color = link_colors[3], group = link_labels[3]) %>%
       addPolylines(data = shapeData_egressLinks, stroke = TRUE, smoothFactor = 1, weight = 7, 
-                  color = "pink", group = "Off Ramps") %>%
+                  color = link_colors[4], group = link_labels[4]) %>%
       addPolylines(data = shapeData_other, stroke = TRUE, smoothFactor = 0, weight = 1, 
-                  color = "grey", group = "All Other Roads")
+                  color = link_colors[5], group = link_labels[5])
 
 # Check if pull links are coded in the shape file
 if('PULLLINK' %in% colnames(shapeData@data)) {
@@ -42,7 +49,7 @@ if('PULLLINK' %in% colnames(shapeData@data)) {
     map <- map %>% 
             addPolylines(data = shapeData_pulllinks, 
                          stroke = TRUE, smoothFactor = 1, weight = 10, 
-                         color = "red", group = "Pull Location",
+                         color = link_colors[6], group = link_labels[6],
                          popup = ~paste("A - B = <b>", paste(A,B,sep = "-") , "</b><br/>") 
             )
   } 
@@ -54,5 +61,11 @@ if('PULLLINK' %in% colnames(shapeData@data)) {
        overlayGroups = c( "General Use", "Express Way", "On Ramps", "Off Ramps", 
                           "All Other Roads", "Pull Location"), 
        options = layersControlOptions(collapsed = FALSE)
-    )
+    ) %>% 
+    addLegend("bottomright", colors = legend_colors, labels = link_labels,
+    title = "Veterans Expressway",
+    opacity = 1
+  )
+    
+
   

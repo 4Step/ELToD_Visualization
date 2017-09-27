@@ -42,8 +42,8 @@ old_policy_2020 <- df %>%
 old_policy_2020
 
 # tmpFile <- tempfile(fileext = ".png")
-export(old_policy_2020, "Output_Graphs/el_old_policy_2020.png")
-htmlwidgets::saveWidget(as.widget(old_policy_2020), "Output_Graphs/el_old_policy_2020.html")
+export(old_policy_2020, paste0(dir_path,"/Output_Graphs/el_old_policy_2020.png"))
+htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/el_old_policy_2020.html"))
 
 ```
 
@@ -62,8 +62,8 @@ new_policy_2020 <- df %>%
               plot_volumes(ymax_2020_EL,FALSE)
 
 new_policy_2020
-export(new_policy_2020, "Output_Graphs/el_new_policy_2020.png")
-htmlwidgets::saveWidget(as.widget(new_policy_2020), "Output_Graphs/el_new_policy_2020.html")
+export(new_policy_2020, paste0(dir_path,"/Output_Graphs/el_new_policy_2020.png"))
+htmlwidgets::saveWidget(new_policy_2020, paste0(dir_path,"/Output_Graphs/el_new_policy_2020.html"))
 ```
 
 
@@ -86,8 +86,8 @@ old_policy_2040 <- df %>%
 
 # Plot Old Policy Volumes
 old_policy_2040
-export(old_policy_2040, "Output_Graphs/el_old_policy_2040.png")
-htmlwidgets::saveWidget(as.widget(old_policy_2040), "Output_Graphs/el_old_policy_2040.html")
+export(old_policy_2040, paste0(dir_path,"/Output_Graphs/el_old_policy_2040.png"))
+htmlwidgets::saveWidget(old_policy_2040, paste0(dir_path,"/Output_Graphs/el_old_policy_2040.html"))
 
 ```
    
@@ -106,8 +106,8 @@ new_policy_2040 <- df %>%
               plot_volumes(ymax_2040_EL,FALSE)
 
 new_policy_2040 
-export(new_policy_2040, "Output_Graphs/el_new_policy_2040.png")
-htmlwidgets::saveWidget(as.widget(new_policy_2040), "Output_Graphs/el_new_policy_2040.html")
+export(new_policy_2040, paste0(dir_path,"/Output_Graphs/el_new_policy_2040.png"))
+htmlwidgets::saveWidget(new_policy_2040, paste0(dir_path,"/Output_Graphs/el_new_policy_2040.html"))
 
 ```
 
@@ -132,8 +132,8 @@ old_policy_2020 <- df %>%
 
 # Plot Old Polciy Volumes
 old_policy_2020
-export(old_policy_2020, "Output_Graphs/gl_old_policy_2020.png")
-htmlwidgets::saveWidget(as.widget(old_policy_2020), "Output_Graphs/gl_old_policy_2040.html")
+export(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_old_policy_2020.png"))
+htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_old_policy_2040.html"))
 
 ```
 
@@ -152,8 +152,8 @@ new_policy_2020 <- df %>%
               plot_volumes(ymax_2020_GL,TRUE)
 
 new_policy_2020
-export(new_policy_2020, "Output_Graphs/gl_new_policy_2020.png")
-htmlwidgets::saveWidget(as.widget(old_policy_2020), "Output_Graphs/gl_new_policy_2020.html")
+export(new_policy_2020, paste0(dir_path,"/Output_Graphs/gl_new_policy_2020.png"))
+htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_new_policy_2020.html"))
 
 ```
 
@@ -177,8 +177,8 @@ old_policy_2040 <- df %>%
 
 # Plot Old Policy Volumes
 old_policy_2040
-export(old_policy_2040, "Output_Graphs/gl_new_policy_2040.png")
-htmlwidgets::saveWidget(as.widget(old_policy_2040), "Output_Graphs/gl_new_policy_2040.html")
+export(old_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.png"))
+htmlwidgets::saveWidget(old_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.html"))
 
 
 ```
@@ -198,8 +198,8 @@ new_policy_2040 <- df %>%
               plot_volumes(ymax_2040_GL,TRUE)
 
 new_policy_2040
-export(new_policy_2040, "Output_Graphs/gl_new_policy_2040.png")
-htmlwidgets::saveWidget(as.widget(new_policy_2040), "Output_Graphs/gl_new_policy_2040.html")
+export(new_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.png"))
+htmlwidgets::saveWidget(new_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.html"))
 ```
 
 
