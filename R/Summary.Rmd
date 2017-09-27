@@ -139,6 +139,25 @@ x_old <- x %>% filter(Policy == "oldPolicy", Year == 2020)
 datatable(x_old) %>%
   formatStyle('A',  color = 'red', backgroundColor = 'orange', fontWeight = 'bold')
 
+  
+y <-  x %>% 
+      mutate(A = A/Total, 
+             B = B/Total, 
+             C = C/Total,
+             id = paste(Year,Policy, Seg, sep = "_")) %>%
+      select(-Total) %>%
+      gather(key, share, -id, -Year, -Policy, -Seg)
+
+
+# TODO: Add Segments as rings; make this a function to get segments automatically
+y_old <-  y %>% 
+          filter(Policy == "oldPolicy", Year == 2020) %>%
+          plot_ly(labels = ~key, values = ~share, split = ~Seg) %>%
+          add_pie(hole = 0.6) %>%
+          layout(title = "EL Shares by LOS and Segments",  showlegend = T,
+                 xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                 yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+  
 ```
 
 ### 2040 Volumes by Segment: Old Policy 
