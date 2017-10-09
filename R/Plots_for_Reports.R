@@ -28,12 +28,24 @@ df %>% filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
 data <- df %>% filter(Policy == "newPolicy", Year == 2040, Seg == 1)
 
 # Axes settings
-x_labels <- list(title = "Hour", autotick = FALSE, ticks = "outside", 
-                 tick0 = 0, dtick = 1)
-y_labels <- list(title = "% Share", autotick = FALSE, ticks = "outside", 
-                 tick0 = 0, dtick = .05, tickformat = ".1%")
+x_labels <- list(title = "Hour", 
+                 color = "grey", 
+                 titlefont = list(color = "black", size = 20, 
+                                  family = list("Arial", "Time New Roman")),
+                 autotick = FALSE, ticks = "outside", 
+                 tick0 = 0, dtick = 1, range = c(0.25,24.5))
+y_labels <- list(title = "EL Share (%)",color = "grey", 
+                 titlefont = list(color = "black", size = 20, 
+                                  family = list("Arial", "Time New Roman")),
+                 autotick = FALSE, ticks = "outside", 
+                 tick0 = 0, dtick = .05, tickformat = ".0%")
 data %>%
    plot_ly(x = ~Hour, y = ~EL_NB_SHARE, mode = 'lines+markers', type = "scatter", name = "EL NB") %>%
    add_trace(y = ~EL_SB_SHARE, mode = 'lines+markers', type = "scatter", name = "EL SB") %>%
-   layout(title = "Diverted Percent (EL Share)", xaxis = x_labels, yaxis = y_labels)
+   layout(title = "Diverted Percent (EL Share)",
+          titlefont = list(color = "black", size = 25, 
+                                  family = list("Arial", "Time New Roman")),
+          xaxis = x_labels, 
+          yaxis = y_labels,
+          margin = list(t = 100, b = 100, l = 100, pad = 5))
   
