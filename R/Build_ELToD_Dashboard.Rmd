@@ -46,6 +46,9 @@ output:
   }
    
 
+ if(writeMasterDb){
+   write.csv(df, paste0(dir_path,"/master_df.csv"), row.names=FALSE)
+ }
 ```
 
 

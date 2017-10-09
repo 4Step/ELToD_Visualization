@@ -5,7 +5,7 @@
   required_packages <- c("knitr", "flexdashboard",
                          "dplyr", "tidyr", 
                          "DT", "data.table", "XLConnect", "foreign",
-                         "plotly", "rgdal", "leaflet", "webshot")
+                         "plotly", "rgdal", "leaflet", "webshot", "ggplot2")
   
   check_packages <- required_packages %in% rownames(installed.packages())
   missing_packages <- required_packages[check_packages == FALSE]
