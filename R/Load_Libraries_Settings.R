@@ -22,11 +22,11 @@
   opts_chunk$set(
   	echo = FALSE,
   	message = FALSE,
-  	warning = FALSE,
-  	fig.path = "figures/",
-    dev = 'png',
-    fig.keep = 'all',
-  	dev.args=list(type="cairo")
+  	warning = FALSE
+  # 	fig.path = "figures/",
+  #   dev = 'png',
+  #   fig.keep = 'all',
+  # 	dev.args=list(type="cairo")
   )
   
   
