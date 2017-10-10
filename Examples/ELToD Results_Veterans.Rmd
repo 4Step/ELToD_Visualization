@@ -46,7 +46,7 @@ output:
   export_summaries_to_excel <- FALSE
   
   # write interim master database file (df)
-  writeMasterDb <- TRUE
+  writeMasterDb <- FALSE
   
   # print selected plots
   plotsPDF <- TRUE
