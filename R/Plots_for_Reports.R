@@ -12,291 +12,163 @@
 # Plot GU vs EL shares by time of day
 
 #===============================================================================
-# Function to plot diverted shares
-#===============================================================================
- report_plots <- function(data, plot_title, type) {
-  
-  # Axes settings
-  x_labels <- list(title = "Hour", 
-                   color = "grey", 
-                   titlefont = list(color = "black", size = 20, 
-                                    family = list("Arial", "Time New Roman")),
-                   autotick = FALSE, ticks = "outside", 
-                   tick0 = 0, dtick = 1, range = c(0.25,24.5))
-  
-  # Y-axis for EL Shares
-  y_labels_share <- list(title = "EL Share (%)",color = "grey", 
-                   titlefont = list(color = "black", size = 20, 
-                                    family = list("Arial", "Time New Roman")),
-                   autotick = FALSE, ticks = "outside", 
-                   tick0 = 0, dtick = .05, tickformat = ".0%")
-  
-  # Y-axis for V/C ratios
-  y_labels_vc <- list(title = "v/c ratio",color = "grey", 
-                   titlefont = list(color = "black", size = 20, 
-                                    family = list("Arial", "Time New Roman")),
-                   autotick = FALSE, ticks = "outside", 
-                   tick0 = 0, dtick = .1,range = c(0,1.2))
-
-  # Y-axis for V/C ratios
-  y_labels_speed <- list(title = "Speed (MPH)",color = "grey", 
-                   titlefont = list(color = "black", size = 20, 
-                                    family = list("Arial", "Time New Roman")),
-                   autotick = FALSE, ticks = "outside", 
-                   tick0 = 0, dtick = 10, range= c(0, 80))
-  
-  # Y-axis for TOD Shares
-  y_labels_tod <- list(title = "Hourly Distribution (%)",color = "grey", 
-                   titlefont = list(color = "black", size = 20, 
-                                    family = list("Arial", "Time New Roman")),
-                   autotick = FALSE, ticks = "outside", 
-                   tick0 = 0, dtick = .05, tickformat = ".0%")
- 
-  # Y-axis for Toll  
-  y_labels_toll <- list(title = "Average Toll ($)", color = "red", 
-                   titlefont = list(color = "red",size = 20, 
-                        family = list("Arial", "Time New Roman")), 
-                   overlaying = "y", side = "right",  
-                   ticks = "outside",
-                   tickprefix = "$", tick0 = 0, dtick = 0.05, 
-                   tickformat = ".2f", 
-                   tickfont = list(family = list("Arial"), size = 10))
-                    
-  if(type == "shares") {y_labels = y_labels_share}  
-  if(type == "vc") {y_labels = y_labels_vc} 
-  if(type == "speeds") {y_labels = y_labels_speed}
-  if(type == "tod") {y_labels = y_labels_tod} 
-  if(type == "revenue") {y_labels = y_labels_tod} 
- 
-  # Plot data
-  plot <- data %>%
-          plot_ly(x = ~Hour, 
-                 y = ~Values,
-                 split = ~Type,
-                 mode = 'lines+markers', type = "scatter", showlegend = T)
-  
-  # Layout
-  if(type == "revenue"){
-    # Double plots
-    plot <-  plot %>% 
-    add_bars(x = ~Hour, y = ~Values2, yaxis = "y2", split = ~Type,
-              type = "bar", showlegend = T) %>%
-    layout(title = plot_title, 
-            titlefont = list(color = "black", size = 25, 
-                             family = list("Arial", "Time New Roman")),
-            xaxis = x_labels, 
-            yaxis = y_labels,
-            yaxis2 = y_labels_toll,
-            margin = list(t = 100, b = 100, l = 100, r = 100, pad = 5))  
-   } else {
-    # Single plots
-    plot <-  plot %>%
-    layout(title = plot_title, 
-            titlefont = list(color = "black", size = 25, 
-                             family = list("Arial", "Time New Roman")),
-            xaxis = x_labels, 
-            yaxis = y_labels,
-            margin = list(t = 100, b = 100, l = 100, pad = 5))
-   }
-
-}
-  
-# Apply for new policy only, loop by year and segments
-#===============================================================================  
-# Plotly: Interactive grahics 
-#===============================================================================
-
-# 1. plot diverted_el_shares 
-diverted_el_shares <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       select(NB = EL_NB_SHARE, SB = EL_SB_SHARE, Hour) %>%
-       gather(Type, Values, -Hour) %>%
-       report_plots("Diverted Percent (EL Share)", "shares")
-
-# 2. plot vc ratio 
-vc_ratio <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       select(`GUL NB` = GU_NB_VC_RATIO, `GUL SB` = GU_SB_VC_RATIO,
-              `EL NB` = EL_NB_VC_RATIO, `EL SB` = EL_SB_VC_RATIO, 
-               Hour) %>%
-       gather(Type, Values, -Hour) %>%
-       report_plots("v/c Ratio", "vc")
-
-
-# 3. plot speeds
-speeds <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       select(`GUL NB` = GU_NB_CSPD, `GUL SB` = GU_SB_CSPD,
-              `EL NB` = EL_NB_CSPD, `EL SB` = EL_SB_CSPD, 
-               Hour) %>%
-       gather(Type, Values, -Hour) %>%
-       report_plots("Congested Speeds (MPH)", "speeds")
-
-
-# 4. plot GU and EL shares by time of day
-df_tod <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       mutate(`GUL NB` = GU_NB_VOL / sum(GU_NB_VOL),
-              `GUL SB` = GU_SB_VOL / sum(GU_SB_VOL),
-              `EL NB` = EL_NB_VOL / sum(EL_NB_VOL),
-              `EL SB` = EL_SB_VOL / sum(EL_SB_VOL))
-# NB  
-tod_shares_NB <- df_tod %>% 
-       select(`GUL NB`, `EL NB`, Hour) %>%
-       gather(Type, Values, -Hour) %>%
-       report_plots("GUL and EL Hourly Distribution (NB)", "tod")
-
-#  SB
-tod_shares_SB <- df_tod %>% 
-       select(`GUL SB`, `EL SB`, Hour) %>%
-       gather(Type, Values, -Hour) %>%
-       report_plots("GUL and EL Hourly Distribution (SB)", "tod")
-
-
-# 5. plot EL Toll and Traffic
-toll_revenue <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       mutate(`Revenue NB` = EL_NB_VOL * EL_NB_TOLL / sum(EL_NB_VOL * EL_NB_TOLL),
-              `Revenue SB` = EL_SB_VOL * EL_SB_TOLL / sum(EL_SB_VOL * EL_SB_TOLL)) %>%
-       select(`Revenue NB`, `Revenue SB`, EL_NB_TOLL, EL_SB_TOLL, Hour) %>%
-       gather(Type, Values, -Hour) %>%
-       mutate(temp = ifelse(Type %in% c("Revenue NB", "Revenue SB"), "Revenue", "Toll"),
-              dir = ifelse(Type %in% c("Revenue NB", "EL_NB_TOLL"), "NB", "SB")) %>%
-       select(-Type) %>%
-       spread(temp, Values) %>%
-       select(Hour, Type = dir,Values = Revenue, Values2 = Toll) %>%
-       report_plots("Toll and Revenue", "revenue")
-
-
-# Save plots
-export(diverted_el_shares, "diverted_el_shares.png")
-export(vc_ratio, "vc_ratio.png")
-export(speeds, "speeds.png")
-export(tod_shares_NB, "tod_shares_NB.png")
-export(tod_shares_SB, "tod_shares_SB.png")
-export(toll_revenue, "toll_revenue.png")
-
-#===============================================================================
 # ggplot2: non-interactive graphics
 #===============================================================================
 
 require(ggplot2, scales)
 
-# 1. plot diverted_el_shares 
-diverted_el_shares <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       select(NB = EL_NB_SHARE, SB = EL_SB_SHARE, Hour) %>%
-       gather(Direction, Shares, -Hour) %>%
-       ggplot(aes(x = Hour, y = Shares, colour = Direction)) +
-       geom_line(size = 1)+ geom_point(alpha=.3, size = 5) +
-       scale_y_continuous(labels = percent) +
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       xlab("Hour") + ylab("Diverted Shares (%)") +
-       ggtitle("Diverted Percent (EL Share)")+
-       theme_bw()
-
-# 2. plot vc ratio 
-vc_ratio <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       select(`GUL NB` = GU_NB_VC_RATIO, `GUL SB` = GU_SB_VC_RATIO,
-              `EL NB` = EL_NB_VC_RATIO, `EL SB` = EL_SB_VC_RATIO, 
-               Hour) %>%
-       gather(Facility, VC_Ratio, -Hour) %>%
-       mutate(Direction = ifelse(Facility %in% c("GUL NB", "EL NB"), "NB", "SB"))%>%
-       ggplot(aes(x = Hour, y = VC_Ratio, colour = Facility)) + 
-       geom_line(size = 1)+ geom_point(alpha=.3, size = 3) +
-       facet_grid(~Direction) +
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       xlab("Hour") + ylab("v/c Ratio") +
-       ggtitle("Volume to Capacity Ratio")+
-       theme_bw()
-
-# 3. plot speeds
-speeds <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       select(`GUL NB` = GU_NB_CSPD, `GUL SB` = GU_SB_CSPD,
-              `EL NB` = EL_NB_CSPD, `EL SB` = EL_SB_CSPD, 
-               Hour) %>%
-       gather(Facility, Speed, -Hour) %>%
-       mutate(Direction = ifelse(Facility %in% c("GUL NB", "EL NB"), "NB", "SB"))%>%
-       ggplot(aes(x = Hour, y = Speed, colour = Facility)) + 
-       geom_line(size = 1)+ geom_point(alpha=.3, size = 3) +
-       facet_grid(~Direction) +
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       scale_y_continuous(limits = c(0,75)) +
-       xlab("Hour") + ylab("Speed (MPH)") +
-       ggtitle("Congested Speeds (MPH)")+
-       theme_bw()
-
-# 4. plot GU and EL shares by time of day
-df_tod <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       mutate(`GUL NB` = GU_NB_VOL / sum(GU_NB_VOL),
-              `GUL SB` = GU_SB_VOL / sum(GU_SB_VOL),
-              `EL NB` = EL_NB_VOL / sum(EL_NB_VOL),
-              `EL SB` = EL_SB_VOL / sum(EL_SB_VOL)) %>% 
-       select(`GUL NB`, `EL NB`, `GUL SB`, `EL SB`, Hour) %>%
-       gather(Facility, Shares, -Hour) %>%
-       mutate(Direction = ifelse(Facility %in% c("GUL NB", "EL NB"), "NB", "SB"))%>%     
-       ggplot(aes(x = Hour, y = Shares, colour = Facility)) +
-       geom_line(size = 1)+ geom_point(alpha=.3, size = 5) +
-       facet_grid(~Direction) +
-       scale_y_continuous(labels = percent, limits = c(0, 0.20)) +
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       xlab("Hour") + ylab("Hourly Traffic Distribution") +
-       ggtitle("GUL and EL Hourly Distribution (%)") +
-       theme_bw()
-
-# 5. plot EL Toll and Traffic
-df_tr <- df %>% 
-       filter(Policy == "newPolicy", Year == 2040, Seg == 1) %>%
-       mutate(`Revenue NB` = EL_NB_VOL * EL_NB_TOLL / sum(EL_NB_VOL * EL_NB_TOLL),
-              `Revenue SB` = EL_SB_VOL * EL_SB_TOLL / sum(EL_SB_VOL * EL_SB_TOLL)) %>%
-       select(`Revenue NB`, `Revenue SB`, EL_NB_TOLL, EL_SB_TOLL, Hour) %>%
-       gather(temp, Values, -Hour) %>%
-       mutate(Type = ifelse(temp %in% c("Revenue NB", "Revenue SB"), "Revenue", "Toll"),
-              Direction = ifelse(temp %in% c("Revenue NB", "EL_NB_TOLL"), "NB", "SB")) %>%
-       select(-temp) %>%
-       spread(Type, Values)
+# A function to create plots
+getPlots <- function(selected_df) {
   
- # Attempt #1
- toll_revenue <- ggplot(df_tr, aes(x = Hour, y = Revenue, colour = Direction)) +
-       geom_line(size = 1)+ 
-       geom_point(alpha=.3, size = 5) +
-       geom_bar(aes(x = Hour, y = Toll, fill = Direction ), stat="identity" ) +
-       facet_grid(~Direction) +
-       scale_y_continuous(labels = percent, 
-                          sec.axis = sec_axis(~./max(df_tr$Toll)))  +
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       xlab("Hour") + ylab("Hourly Traffic Distribution") +
-       ggtitle("GUL and EL Hourly Distribution (%)") +
-       theme_bw()
+    selected_df <- selected_df %>% ungroup()
+    title <- paste("Year", selected_df$Year, "Segment", selected_df$Seg, sep = " ")
+    
+    # 1. plot diverted_el_shares 
+    diverted_el_shares <- selected_df %>% 
+           select(NB = EL_NB_SHARE, SB = EL_SB_SHARE, Hour) %>%
+           gather(Direction, Shares, -Hour) %>%
+           ggplot(aes(x = Hour, y = Shares, colour = Direction)) +
+           geom_line(size = 1)+ geom_point(alpha=.3, size = 5) +
+           scale_y_continuous(labels = percent) +
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           xlab("Hour") + ylab("Diverted Shares (%)") +
+           ggtitle(paste(title,"Diverted Percent (EL Share)", sep = " : "))+
+           theme_bw()
+    
+    # 2. plot vc ratio 
+    vc_ratio <- selected_df %>% 
+           select(`GUL NB` = GU_NB_VC_RATIO, `GUL SB` = GU_SB_VC_RATIO,
+                  `EL NB` = EL_NB_VC_RATIO, `EL SB` = EL_SB_VC_RATIO, 
+                   Hour) %>%
+           gather(Facility, VC_Ratio, -Hour) %>%
+           mutate(Direction = ifelse(Facility %in% c("GUL NB", "EL NB"), "NB", "SB"))%>%
+           ggplot(aes(x = Hour, y = VC_Ratio, colour = Facility)) + 
+           geom_line(size = 1)+ geom_point(alpha=.3, size = 3) +
+           facet_grid(~Direction) +
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           xlab("Hour") + ylab("v/c Ratio") +
+           # ggtitle("Volume to Capacity Ratio")+
+           ggtitle(paste(title,"Volume to Capacity Ratio", sep = " : "))+
+           theme_bw()
+    
+    # 3. plot speeds
+    speeds <- selected_df %>% 
+           select(`GUL NB` = GU_NB_CSPD, `GUL SB` = GU_SB_CSPD,
+                  `EL NB` = EL_NB_CSPD, `EL SB` = EL_SB_CSPD, 
+                   Hour) %>%
+           gather(Facility, Speed, -Hour) %>%
+           mutate(Direction = ifelse(Facility %in% c("GUL NB", "EL NB"), "NB", "SB"))%>%
+           ggplot(aes(x = Hour, y = Speed, colour = Facility)) + 
+           geom_line(size = 1)+ geom_point(alpha=.3, size = 3) +
+           facet_grid(~Direction) +
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           scale_y_continuous(limits = c(0,75)) +
+           xlab("Hour") + ylab("Speed (MPH)") +
+           # ggtitle("Congested Speeds (MPH)")+
+           ggtitle(paste(title,"Congested Speeds (MPH)", sep = " : "))+
+           theme_bw()
+    
+    # 4. plot GU and EL shares by time of day
+    df_tod <- selected_df %>% 
+           mutate(`GUL NB` = GU_NB_VOL / sum(GU_NB_VOL),
+                  `GUL SB` = GU_SB_VOL / sum(GU_SB_VOL),
+                  `EL NB` = EL_NB_VOL / sum(EL_NB_VOL),
+                  `EL SB` = EL_SB_VOL / sum(EL_SB_VOL)) %>% 
+           select(`GUL NB`, `EL NB`, `GUL SB`, `EL SB`, Hour) %>%
+           gather(Facility, Shares, -Hour) %>%
+           mutate(Direction = ifelse(Facility %in% c("GUL NB", "EL NB"), "NB", "SB"))%>%     
+           ggplot(aes(x = Hour, y = Shares, colour = Facility)) +
+           geom_line(size = 1)+ geom_point(alpha=.3, size = 5) +
+           facet_grid(~Direction) +
+           scale_y_continuous(labels = percent, limits = c(0, 0.20)) +
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           xlab("Hour") + ylab("Hourly Traffic Distribution") +
+           # ggtitle("GUL and EL Hourly Distribution (%)") +
+           ggtitle(paste(title,"GUL and EL Hourly Distribution (%)", sep = " : "))+
+           theme_bw()
+    
+    # 5. plot EL Toll and Traffic
+    df_tr <- selected_df %>% 
+           select(EL_NB_VOL , EL_NB_TOLL, EL_SB_VOL , EL_SB_TOLL, Hour) %>%
+           mutate(`Revenue NB` = EL_NB_VOL * EL_NB_TOLL / sum(EL_NB_VOL * EL_NB_TOLL),
+                  `Revenue SB` = EL_SB_VOL * EL_SB_TOLL / sum(EL_SB_VOL * EL_SB_TOLL)) %>%
+           select(`Revenue NB`, `Revenue SB`, EL_NB_TOLL, EL_SB_TOLL, Hour) %>%
+           gather(temp, Values, -Hour) %>%
+           mutate(Type = ifelse(temp %in% c("Revenue NB", "Revenue SB"), "Revenue", "Toll"),
+                  Direction = ifelse(temp %in% c("Revenue NB", "EL_NB_TOLL"), "NB", "SB")) %>%
+           select(-temp) %>%
+           spread(Type, Values)
+      
+     # Attempt #1 (bug in secondary axis)
+     toll_revenue <- ggplot(df_tr, aes(x = Hour, y = Revenue, colour = Direction)) +
+           geom_line(size = 1)+ 
+           geom_point(alpha=.3, size = 5) +
+           geom_bar(aes(x = Hour, y = Toll, fill = Direction ), stat="identity" ) +
+           facet_grid(~Direction) +
+           scale_y_continuous(labels = percent, 
+                              sec.axis = sec_axis(~ . /max(df_tr$Toll), 
+                                        labels = dollar_format(prefix = "$")))  +
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           xlab("Hour") + ylab("Hourly Traffic Distribution") +
+           ggtitle("GUL and EL Hourly Distribution (%)") +
+           theme_bw()
+    
+     # Attempt #2      
+     revenue <- df_tr %>%
+           ggplot(aes(x = Hour, y = Revenue, colour = Direction)) +
+           geom_line(size = 1)+ 
+           geom_point(alpha=.3, size = 5) +
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           xlab("Hour") + ylab("Revenue Share (%)") +
+           # ggtitle("Revenue Distribution by Hour (%)") +
+           ggtitle(paste(title,"Revenue Distribution by Hour (%)", sep = " : "))+
+           theme_bw()
+     
+     toll <- df_tr %>%
+           ggplot(aes(x = Hour, y = Toll, colour = Direction)) +
+           geom_bar(stat="identity", aes(fill = Direction)) + 
+           scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
+           scale_y_continuous(labels = dollar_format(prefix = "$")) +
+           xlab("Hour") + ylab("Toll ($)") +
+           # ggtitle("Average Toll by Hour (Dollars)") +
+           ggtitle(paste(title,"Average Toll by Hour (Dollars)", sep = " : "))+
+           theme_bw() 
+ 
+     plots <- list(diverted_el_shares = diverted_el_shares,
+                   vc_ratio = vc_ratio,
+                   speeds = speeds,
+                   df_tod = df_tod,
+                   revenue = revenue,
+                   toll = toll)
+     
+     return(plots)
+ }
 
- # Attempt #2      
- revenue <- df_tr %>%
-       ggplot(aes(x = Hour, y = Revenue, colour = Direction)) +
-       geom_line(size = 1)+ 
-       geom_point(alpha=.3, size = 5) +
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       xlab("Hour") + ylab("Revenue Share (%)") +
-       ggtitle("Revenue Distribution by Hour (%)") +
-       theme_bw()
- 
- toll <- df_tr %>%
-       ggplot(aes(x = Hour, y = Toll, colour = Direction)) +
-       geom_bar(stat="identity", aes(fill = Direction)) + 
-       scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-       scale_y_continuous(labels = dollar_format(prefix = "$")) +
-       xlab("Hour") + ylab("Toll ($)") +
-       ggtitle("Average Toll by Hour (Dollars)") +
-       theme_bw() 
- 
- pdf("plots.pdf",width=10, height=6.5)
-   plot(diverted_el_shares)
-   plot(vc_ratio)
-   plot(speeds)
-   plot(df_tod)
-   plot(revenue)
-   plot(toll)
- dev.off()
- 
+
+################################################################################
+# Loop over year and segment
+################################################################################
+selected_df <- df %>% 
+               filter(Policy == "newPolicy")
+
+# Get years and segments
+nyear <- unique(selected_df$Year)
+nsegs <- unique(selected_df$Seg)
+
+# Open pdf writer
+pdf(pdf_output,width=10, height=6.5)
+
+# Print plots
+for(y in nyear){
+  for (s in nsegs){
+    plots <- selected_df %>% 
+             filter(Year == y, Seg == s) %>%
+             getPlots() %>%
+             sapply(plot)
+  }
+}
+
+# Close pdf writer
+dev.off()
+
+################################################################################

@@ -48,6 +48,10 @@ output:
   # write interim master database file (df)
   writeMasterDb <- TRUE
   
+  # print selected plots
+  plotsPDF <- TRUE
+  pdf_output <- "Veterans_Expressway.pdf"
+    
   # Display project on map (Dashboard 'Summary' tab)
   display_Project <- TRUE
   shape_file      <- "Veterans_v2.shp"

@@ -51,6 +51,13 @@ output:
  }
 ```
 
+```{r static pdf plots}
+ if(plotsPDF){
+   # load function to animate
+   source(paste0(dir_path,'/R/Plots_for_Reports.R'))
+ }
+```
+
 
 ```{r plot volume function}
    # load function to animate
