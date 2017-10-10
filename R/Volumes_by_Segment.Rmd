@@ -41,9 +41,8 @@ old_policy_2020 <- df %>%
 # Plot Old Polciy Volumes
 old_policy_2020
 
-# tmpFile <- tempfile(fileext = ".png")
 export(old_policy_2020, paste0(dir_path,"/Output_Graphs/el_old_policy_2020.png"))
-htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/el_old_policy_2020.html"))
+# htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/el_old_policy_2020.html"))
 
 ```
 
@@ -63,7 +62,7 @@ new_policy_2020 <- df %>%
 
 new_policy_2020
 export(new_policy_2020, paste0(dir_path,"/Output_Graphs/el_new_policy_2020.png"))
-htmlwidgets::saveWidget(new_policy_2020, paste0(dir_path,"/Output_Graphs/el_new_policy_2020.html"))
+# htmlwidgets::saveWidget(new_policy_2020, paste0(dir_path,"/Output_Graphs/el_new_policy_2020.html"))
 ```
 
 
@@ -87,7 +86,7 @@ old_policy_2040 <- df %>%
 # Plot Old Policy Volumes
 old_policy_2040
 export(old_policy_2040, paste0(dir_path,"/Output_Graphs/el_old_policy_2040.png"))
-htmlwidgets::saveWidget(old_policy_2040, paste0(dir_path,"/Output_Graphs/el_old_policy_2040.html"))
+# htmlwidgets::saveWidget(old_policy_2040, paste0(dir_path,"/Output_Graphs/el_old_policy_2040.html"))
 
 ```
    
@@ -107,7 +106,7 @@ new_policy_2040 <- df %>%
 
 new_policy_2040 
 export(new_policy_2040, paste0(dir_path,"/Output_Graphs/el_new_policy_2040.png"))
-htmlwidgets::saveWidget(new_policy_2040, paste0(dir_path,"/Output_Graphs/el_new_policy_2040.html"))
+# htmlwidgets::saveWidget(new_policy_2040, paste0(dir_path,"/Output_Graphs/el_new_policy_2040.html"))
 
 ```
 
@@ -133,7 +132,7 @@ old_policy_2020 <- df %>%
 # Plot Old Polciy Volumes
 old_policy_2020
 export(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_old_policy_2020.png"))
-htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_old_policy_2040.html"))
+# htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_old_policy_2040.html"))
 
 ```
 
@@ -153,7 +152,7 @@ new_policy_2020 <- df %>%
 
 new_policy_2020
 export(new_policy_2020, paste0(dir_path,"/Output_Graphs/gl_new_policy_2020.png"))
-htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_new_policy_2020.html"))
+# htmlwidgets::saveWidget(old_policy_2020, paste0(dir_path,"/Output_Graphs/gl_new_policy_2020.html"))
 
 ```
 
@@ -178,7 +177,7 @@ old_policy_2040 <- df %>%
 # Plot Old Policy Volumes
 old_policy_2040
 export(old_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.png"))
-htmlwidgets::saveWidget(old_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.html"))
+# htmlwidgets::saveWidget(old_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.html"))
 
 
 ```
@@ -199,7 +198,7 @@ new_policy_2040 <- df %>%
 
 new_policy_2040
 export(new_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.png"))
-htmlwidgets::saveWidget(new_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.html"))
+# htmlwidgets::saveWidget(new_policy_2040, paste0(dir_path,"/Output_Graphs/gl_new_policy_2040.html"))
 ```
 
 
