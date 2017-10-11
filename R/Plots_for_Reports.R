@@ -120,7 +120,7 @@ getPlots <- function(selected_df) {
            geom_point(alpha=.3, size = 5) +
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("Revenue Share (%)") +
-           # ggtitle("Revenue Distribution by Hour (%)") +
+           scale_y_continuous(labels = percent) +
            ggtitle(paste(title,"Revenue Distribution by Hour (%)", sep = " : "))+
            theme_bw()
      
@@ -130,20 +130,26 @@ getPlots <- function(selected_df) {
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            scale_y_continuous(labels = dollar_format(prefix = "$")) +
            xlab("Hour") + ylab("Toll ($)") +
-           # ggtitle("Average Toll by Hour (Dollars)") +
            ggtitle(paste(title,"Average Toll by Hour (Dollars)", sep = " : "))+
            theme_bw() 
  
-     plots <- list(diverted_el_shares = diverted_el_shares,
-                   vc_ratio = vc_ratio,
-                   speeds = speeds,
-                   df_tod = df_tod,
-                   revenue = revenue,
-                   toll = toll)
+     # plots <- list(diverted_el_shares = diverted_el_shares,
+     #               vc_ratio = vc_ratio,
+     #               speeds = speeds,
+     #               df_tod = df_tod,
+     #               revenue = revenue,
+     #               toll = toll)
+     
+    plots <- ggarrange(diverted_el_shares, 
+               vc_ratio, 
+               speeds,
+               df_tod,
+               revenue,
+               toll + rremove("x.text"), 
+               ncol = 2, nrow = 2)
      
      return(plots)
  }
-
 
 ################################################################################
 # Loop over year and segment

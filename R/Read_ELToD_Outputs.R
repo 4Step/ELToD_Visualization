@@ -24,7 +24,7 @@ for (p in 1:length(policy)){
 #======================================================================
 # 2. read pull links
 #======================================================================
-df_pulllink <- read.csv(pull_link) %>%
+df_pulllink <- read.csv(paste(file_path,pull_link, sep ="\\")) %>%
   mutate(key = paste(A, B, sep = "-")) %>%
   select(-A, -B, -PULL)
 

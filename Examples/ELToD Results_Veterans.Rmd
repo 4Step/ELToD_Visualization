@@ -40,10 +40,10 @@ output:
   
   # Excel Summary file
   # A choice to read data from excel spreadsheets instead of standard ELToD outputs
-  read_from_excel <- TRUE
+  read_from_excel <- FALSE
   
   # when read_from_excel is false, should it write to excel summaries
-  export_summaries_to_excel <- FALSE
+  export_summaries_to_excel <- TRUE
   
   # write interim master database file (df)
   writeMasterDb <- FALSE

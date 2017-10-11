@@ -2,7 +2,7 @@
 #======================================================================
 # Check and install libraries 
 #======================================================================
-  required_packages <- c("knitr", "flexdashboard",
+  required_packages <- c("ggpubr", "knitr", "flexdashboard",
                          "dplyr", "tidyr", 
                          "DT", "data.table", "XLConnect", "foreign",
                          "plotly", "rgdal", "leaflet", "webshot", 
