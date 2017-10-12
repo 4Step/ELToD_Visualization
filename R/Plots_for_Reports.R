@@ -20,8 +20,8 @@ require(ggplot2, scales)
 # A function to create plots
 getPlots <- function(selected_df) {
   
-    selected_df <- selected_df %>% ungroup()
-    title <- paste("Year", selected_df$Year, "Segment", selected_df$Seg, sep = " ")
+    # selected_df <- selected_df %>% ungroup()
+    # title <- paste("Year", selected_df$Year, "Segment", selected_df$Seg, sep = " ")
     
     # 1. plot diverted_el_shares 
     diverted_el_shares <- selected_df %>% 
@@ -34,7 +34,8 @@ getPlots <- function(selected_df) {
            xlab("Hour") + ylab("Diverted Shares (%)") +
            ggtitle("Diverted Percent (EL Share)")+
            # ggtitle(paste(title,"Diverted Percent (EL Share)", sep = " : "))+
-           theme_bw()
+           theme_bw() + 
+           theme(plot.title = element_text(size = 12, face = "bold", color = "darkgrey"))
     
     # 2. plot vc ratio 
     vc_ratio <- selected_df %>% 
@@ -50,7 +51,8 @@ getPlots <- function(selected_df) {
            xlab("Hour") + ylab("v/c Ratio") +
            ggtitle("Volume to Capacity Ratio")+
            # ggtitle(paste(title,"Volume to Capacity Ratio", sep = " : "))+
-           theme_bw()
+           theme_bw()+ 
+           theme(plot.title = element_text(size = 12, face = "bold", color = "darkgrey"))
     
     # 3. plot speeds
     speeds <- selected_df %>% 
@@ -67,7 +69,8 @@ getPlots <- function(selected_df) {
            xlab("Hour") + ylab("Speed (MPH)") +
            ggtitle("Congested Speeds (MPH)")+
            # ggtitle(paste(title,"Congested Speeds (MPH)", sep = " : "))+
-           theme_bw()
+           theme_bw()+ 
+           theme(plot.title = element_text(size = 12, face = "bold", color = "darkgrey"))
     
     # 4. plot GU and EL shares by time of day
     df_tod <- selected_df %>% 
@@ -86,7 +89,8 @@ getPlots <- function(selected_df) {
            xlab("Hour") + ylab("Hourly Traffic Distribution") +
            ggtitle("GUL and EL Hourly Distribution (%)") +
            # ggtitle(paste(title,"GUL and EL Hourly Distribution (%)", sep = " : "))+
-           theme_bw()
+           theme_bw()+ 
+           theme(plot.title = element_text(size = 12, face = "bold", color = "darkgrey"))
     
     # 5. plot EL Toll and Traffic
     df_tr <- selected_df %>% 
@@ -112,13 +116,14 @@ getPlots <- function(selected_df) {
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("Hourly Traffic Distribution") +
            ggtitle("GUL and EL Hourly Distribution (%)") +
-           theme_bw()
+           theme_bw()+ 
+           theme(plot.title = element_text(size = 12, face = "bold", color = "darkgrey"))
     
      # Attempt #2      
      revenue <- df_tr %>%
            ggplot(aes(x = Hour, y = Revenue, colour = Direction)) +
            geom_line(size = 1)+ 
-           geom_point(alpha=.3, size = 5) +
+           geom_point(alpha=.7, size = 5) +
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("Revenue Share (%)") +
            scale_y_continuous(labels = percent, position = "right") +
@@ -126,14 +131,15 @@ getPlots <- function(selected_df) {
            # ggtitle(paste(title,"Revenue Distribution by Hour (%)", sep = " : "))+
            theme_bw() + theme(legend.justification = "top",
                               legend.spacing.y = unit(1, "cm"),
-                              legend.margin = margin(20,20,20,20),
-                              panel.spacing = unit(2, "cm"),
-                              plot.margin = margin(t = 0, l = 40, b = 0, r = 20))
-           # theme_minimal()+ theme(legend.position = 'bottom')
-     
+                              legend.margin = margin(t=30,r=10,b=10,l=10),
+                              # panel.spacing = unit(2, "cm"),
+                              panel.grid.minor.y = element_blank(),
+                              plot.margin = margin(t = 40, l = 40, b = 0, r = 0),
+                              plot.title = element_text(size = 12, face = "bold", color = "darkgrey"))
+
      toll <- df_tr %>%
            ggplot(aes(x = Hour, y = Toll, colour = Direction)) +
-           geom_bar(stat="identity", aes(fill = Direction)) + 
+           geom_bar(stat="identity", aes(fill = Direction, alpha = 0.2)) + 
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            scale_y_continuous(labels = dollar_format(prefix = "$ ")) +
            xlab("Hour") + ylab("Toll ($)") +
@@ -142,9 +148,9 @@ getPlots <- function(selected_df) {
            # theme_bw()
            theme(axis.text.y = element_text(colour = "red"),
                  axis.title.y = element_text(colour = "red", 
-                                             margin = margin(t = 0, l = 0, b = 0, r = 25)),
+                                             margin = margin(t = 40, l = 20, b = 0, r = 0)),
                  panel.background = element_blank(),
-                 panel.grid.major.y = element_line(colour = "pink"),
+                 panel.grid.major.y = element_line(colour = "pink", linetype = 3, size = 0.5),
                  legend.position = 'bottom')
 
       # merge two plots
@@ -156,11 +162,11 @@ getPlots <- function(selected_df) {
       g <- gtable_add_grob(g1, g2$grobs[[which(g2$layout$name == "panel")]], pp$t, 
           pp$l, pp$b, pp$l)
       
-      g$grobs[[which(g2$layout$name == "ylab-l")]] = g2$grobs[[which(g2$layout$name == "ylab-l")]]
-      g$grobs[[which(g2$layout$name == "axis-l")]] = g2$grobs[[which(g2$layout$name == "axis-l")]]
+      g$grobs[[which(g$layout$name == "ylab-l")]] = g2$grobs[[which(g2$layout$name == "ylab-l")]]
+      g$grobs[[which(g$layout$name == "axis-l")]] = g2$grobs[[which(g2$layout$name == "axis-l")]]
       
-      plots <- ggarrange(vc_ratio, speeds, df_tod, ncol = 1, nrow = 2,  
-                         ggarrange(diverted_el_shares, g, ncol = 2, nrow = 1)
+      plots <- ggarrange(vc_ratio, speeds, df_tod, diverted_el_shares, g, 
+                         ncol = 1, nrow = 2
                         )
       return(plots)
      
@@ -184,10 +190,24 @@ pdf(paste(dir_path,pdf_output,sep="/"),width=11, height=8.5)
 # Print plots
 for(y in nyear){
   for (s in nsegs){
+    
+    # Generate Plots
     plots <- selected_df %>% 
              filter(Year == y, Seg == s) %>%
-             getPlots() %>%
-             sapply(plot)
+             getPlots() 
+    # %>%
+    #          sapply(plot)
+    
+    # Add title
+    title <- paste("Year", y, "Segment", s, sep = " ")
+    
+    # Add title and print
+    x <- gridExtra::marrangeGrob(plots, nrow=1, ncol = 1, 
+                 top = title, 
+                 bottom = quote("Location: M:\\Projects\\Express Lanes\\Finance Forecast 2017-08"))
+
+    print(x)
+    
   } 
 }
 
