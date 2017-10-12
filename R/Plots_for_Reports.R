@@ -32,7 +32,8 @@ getPlots <- function(selected_df) {
            scale_y_continuous(labels = percent) +
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("Diverted Shares (%)") +
-           ggtitle(paste(title,"Diverted Percent (EL Share)", sep = " : "))+
+           ggtitle("Diverted Percent (EL Share)")+
+           # ggtitle(paste(title,"Diverted Percent (EL Share)", sep = " : "))+
            theme_bw()
     
     # 2. plot vc ratio 
@@ -47,8 +48,8 @@ getPlots <- function(selected_df) {
            facet_grid(~Direction) +
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("v/c Ratio") +
-           # ggtitle("Volume to Capacity Ratio")+
-           ggtitle(paste(title,"Volume to Capacity Ratio", sep = " : "))+
+           ggtitle("Volume to Capacity Ratio")+
+           # ggtitle(paste(title,"Volume to Capacity Ratio", sep = " : "))+
            theme_bw()
     
     # 3. plot speeds
@@ -64,8 +65,8 @@ getPlots <- function(selected_df) {
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            scale_y_continuous(limits = c(0,75)) +
            xlab("Hour") + ylab("Speed (MPH)") +
-           # ggtitle("Congested Speeds (MPH)")+
-           ggtitle(paste(title,"Congested Speeds (MPH)", sep = " : "))+
+           ggtitle("Congested Speeds (MPH)")+
+           # ggtitle(paste(title,"Congested Speeds (MPH)", sep = " : "))+
            theme_bw()
     
     # 4. plot GU and EL shares by time of day
@@ -83,8 +84,8 @@ getPlots <- function(selected_df) {
            scale_y_continuous(labels = percent, limits = c(0, 0.20)) +
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("Hourly Traffic Distribution") +
-           # ggtitle("GUL and EL Hourly Distribution (%)") +
-           ggtitle(paste(title,"GUL and EL Hourly Distribution (%)", sep = " : "))+
+           ggtitle("GUL and EL Hourly Distribution (%)") +
+           # ggtitle(paste(title,"GUL and EL Hourly Distribution (%)", sep = " : "))+
            theme_bw()
     
     # 5. plot EL Toll and Traffic
@@ -120,40 +121,57 @@ getPlots <- function(selected_df) {
            geom_point(alpha=.3, size = 5) +
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
            xlab("Hour") + ylab("Revenue Share (%)") +
-           scale_y_continuous(labels = percent) +
-           ggtitle(paste(title,"Revenue Distribution by Hour (%)", sep = " : "))+
-           theme_bw()
+           scale_y_continuous(labels = percent, position = "right") +
+           ggtitle("Revenue Distribution by Hour (%)")+
+           # ggtitle(paste(title,"Revenue Distribution by Hour (%)", sep = " : "))+
+           theme_bw() + theme(legend.justification = "top",
+                              legend.spacing.y = unit(1, "cm"),
+                              legend.margin = margin(20,20,20,20),
+                              panel.spacing = unit(2, "cm"),
+                              plot.margin = margin(t = 0, l = 40, b = 0, r = 20))
+           # theme_minimal()+ theme(legend.position = 'bottom')
      
      toll <- df_tr %>%
            ggplot(aes(x = Hour, y = Toll, colour = Direction)) +
            geom_bar(stat="identity", aes(fill = Direction)) + 
            scale_x_continuous(breaks = c(1, 5, 10, 15, 20, 24)) +
-           scale_y_continuous(labels = dollar_format(prefix = "$")) +
+           scale_y_continuous(labels = dollar_format(prefix = "$ ")) +
            xlab("Hour") + ylab("Toll ($)") +
-           ggtitle(paste(title,"Average Toll by Hour (Dollars)", sep = " : "))+
-           theme_bw() 
- 
-     # plots <- list(diverted_el_shares = diverted_el_shares,
-     #               vc_ratio = vc_ratio,
-     #               speeds = speeds,
-     #               df_tod = df_tod,
-     #               revenue = revenue,
-     #               toll = toll)
+           ggtitle("Average Toll by Hour (Dollars)")+
+           # ggtitle(paste(title,"Average Toll by Hour (Dollars)", sep = " : "))+
+           # theme_bw()
+           theme(axis.text.y = element_text(colour = "red"),
+                 axis.title.y = element_text(colour = "red", 
+                                             margin = margin(t = 0, l = 0, b = 0, r = 25)),
+                 panel.background = element_blank(),
+                 panel.grid.major.y = element_line(colour = "pink"),
+                 legend.position = 'bottom')
+
+      # merge two plots
+      g1 <- ggplotGrob(revenue)
+      g2 <- ggplotGrob(toll)
+
+      # overlap the panel of 2nd plot on that of 1st plot
+      pp <- c(subset(g1$layout, name == "panel", se = t:r))
+      g <- gtable_add_grob(g1, g2$grobs[[which(g2$layout$name == "panel")]], pp$t, 
+          pp$l, pp$b, pp$l)
+      
+      g$grobs[[which(g2$layout$name == "ylab-l")]] = g2$grobs[[which(g2$layout$name == "ylab-l")]]
+      g$grobs[[which(g2$layout$name == "axis-l")]] = g2$grobs[[which(g2$layout$name == "axis-l")]]
+      
+      plots <- ggarrange(vc_ratio, speeds, df_tod, ncol = 1,
+                         nrow = 2,  
+                         ggarrange(diverted_el_shares, g,ncol = 2,
+                         nrow = 1))
+      return(plots)
      
-    plots <- ggarrange(diverted_el_shares, 
-               vc_ratio, 
-               speeds,
-               df_tod,
-               revenue,
-               toll + rremove("x.text"), 
-               ncol = 2, nrow = 2)
-     
-     return(plots)
  }
 
 ################################################################################
 # Loop over year and segment
 ################################################################################
+
+# df <- read.csv(paste0(dir_path,"/master_df.csv"))
 selected_df <- df %>% 
                filter(Policy == "newPolicy")
 
@@ -162,7 +180,7 @@ nyear <- unique(selected_df$Year)
 nsegs <- unique(selected_df$Seg)
 
 # Open pdf writer
-pdf(pdf_output,width=10, height=6.5)
+pdf(paste(dir_path,pdf_output,sep="/"),width=11, height=8.5)
 
 # Print plots
 for(y in nyear){
@@ -171,7 +189,7 @@ for(y in nyear){
              filter(Year == y, Seg == s) %>%
              getPlots() %>%
              sapply(plot)
-  }
+  } 
 }
 
 # Close pdf writer
