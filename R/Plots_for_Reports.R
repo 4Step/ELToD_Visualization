@@ -159,10 +159,9 @@ getPlots <- function(selected_df) {
       g$grobs[[which(g2$layout$name == "ylab-l")]] = g2$grobs[[which(g2$layout$name == "ylab-l")]]
       g$grobs[[which(g2$layout$name == "axis-l")]] = g2$grobs[[which(g2$layout$name == "axis-l")]]
       
-      plots <- ggarrange(vc_ratio, speeds, df_tod, ncol = 1,
-                         nrow = 2,  
-                         ggarrange(diverted_el_shares, g,ncol = 2,
-                         nrow = 1))
+      plots <- ggarrange(vc_ratio, speeds, df_tod, ncol = 1, nrow = 2,  
+                         ggarrange(diverted_el_shares, g, ncol = 2, nrow = 1)
+                        )
       return(plots)
      
  }
